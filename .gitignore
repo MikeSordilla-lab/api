@@ -1,0 +1,13 @@
+# Node / Expo
+node_modules/
+.expo/
+dist/
+web-build/
+npm-debug.log*
+
+# Windows reserved device name (causes Git errors on Windows)
+nul
+
+# OS
+.DS_Store
+Thumbs.db
