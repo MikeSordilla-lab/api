@@ -3,12 +3,14 @@ import {
   View,
   Text,
   FlatList,
-  TouchableOpacity,
-  TextInput,
   Alert,
   StyleSheet,
   SafeAreaView,
+  ScrollView,
 } from "react-native";
+import StudentForm from "./components/StudentForm";
+import StudentCard from "./components/StudentCard";
+import { colors, spacing, font } from "./theme/bootstrap";
 
 const BASE_URL = "http://192.168.0.78/api"; // e.g. http://192.168.1.5/api
 
@@ -24,49 +26,69 @@ export default function App() {
   }, []);
 
   const fetchStudents = async () => {
-    const res = await fetch(`${BASE_URL}/students.php`);
-    const data = await res.json();
-    setStudents(data);
+    try {
+      const res = await fetch(`${BASE_URL}/students.php`);
+      const data = await res.json();
+      setStudents(data);
+    } catch (error) {
+      Alert.alert("Error", "Failed to fetch students.");
+    }
   };
 
   const createStudent = async () => {
-    const res = await fetch(`${BASE_URL}/create_student.php`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ firstname, lastname, ratings: parseInt(ratings) }),
-    });
-    const data = await res.json();
-    Alert.alert(data.status, data.message);
-    fetchStudents();
-    clearForm();
+    try {
+      const res = await fetch(`${BASE_URL}/create_student.php`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstname,
+          lastname,
+          ratings: parseInt(ratings, 10),
+        }),
+      });
+      const data = await res.json();
+      Alert.alert(data.status, data.message);
+      fetchStudents();
+      clearForm();
+    } catch (error) {
+      Alert.alert("Error", "Failed to create student.");
+    }
   };
 
   const updateStudent = async () => {
-    const res = await fetch(`${BASE_URL}/update_student.php`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id: editingId,
-        firstname,
-        lastname,
-        ratings: parseInt(ratings),
-      }),
-    });
-    const data = await res.json();
-    Alert.alert(data.status, data.message);
-    fetchStudents();
-    clearForm();
+    try {
+      const res = await fetch(`${BASE_URL}/update_student.php`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: editingId,
+          firstname,
+          lastname,
+          ratings: parseInt(ratings, 10),
+        }),
+      });
+      const data = await res.json();
+      Alert.alert(data.status, data.message);
+      fetchStudents();
+      clearForm();
+    } catch (error) {
+      Alert.alert("Error", "Failed to update student.");
+    }
   };
 
   const deleteStudent = async (id) => {
-    const res = await fetch(`${BASE_URL}/delete_student.php`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
-    });
-    const data = await res.json();
-    Alert.alert(data.status, data.message);
-    fetchStudents();
+    try {
+      const res = await fetch(`${BASE_URL}/delete_student.php`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      const data = await res.json();
+      Alert.alert(data.status, data.message);
+      fetchStudents();
+    } catch (error) {
+      Alert.alert("Error", "Failed to delete student.");
+    }
   };
 
   const selectForEdit = (item) => {
@@ -84,100 +106,134 @@ export default function App() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Student List</Text>
-
-      {/* Form */}
-      <TextInput
-        style={styles.input}
-        placeholder="First Name"
-        value={firstname}
-        onChangeText={setFirstname}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Last Name"
-        value={lastname}
-        onChangeText={setLastname}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Ratings"
-        value={ratings}
-        onChangeText={setRatings}
-        keyboardType="numeric"
-      />
-
-      <TouchableOpacity
-        style={styles.btn}
-        onPress={editingId ? updateStudent : createStudent}
+    <SafeAreaView style={styles.screen}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="handled"
       >
-        <Text style={styles.btnText}>
-          {editingId ? "Update Student" : "Add Student"}
-        </Text>
-      </TouchableOpacity>
-      {editingId && (
-        <TouchableOpacity
-          style={[styles.btn, { backgroundColor: "#999" }]}
-          onPress={clearForm}
-        >
-          <Text style={styles.btnText}>Cancel</Text>
-        </TouchableOpacity>
-      )}
+        {/* Navbar / Header */}
+        <View style={styles.navbar}>
+          <Text style={styles.navbarBrand}>🎓 Student List</Text>
+          <Text style={styles.navbarCount}>{students.length} students</Text>
+        </View>
 
-      {/* List */}
-      <FlatList
-        data={students}
-        keyExtractor={(item) => String(item.id)}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.name}>
-              {item.firstname} {item.lastname}
+        {/* Add / Edit Form */}
+        <StudentForm
+          editingId={editingId}
+          firstname={firstname}
+          lastname={lastname}
+          ratings={ratings}
+          setFirstname={setFirstname}
+          setLastname={setLastname}
+          setRatings={setRatings}
+          onSubmit={editingId ? updateStudent : createStudent}
+          onCancel={clearForm}
+        />
+
+        {/* Divider with section label */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Students</Text>
+          <View style={styles.divider} />
+        </View>
+
+        {/* Student list */}
+        {students.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyIcon}>📋</Text>
+            <Text style={styles.emptyText}>No students yet.</Text>
+            <Text style={styles.emptySubtext}>
+              Add one using the form above.
             </Text>
-            <Text>Ratings: {item.ratings}</Text>
-            <View style={styles.actions}>
-              <TouchableOpacity onPress={() => selectForEdit(item)}>
-                <Text style={styles.edit}>Edit</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => deleteStudent(item.id)}>
-                <Text style={styles.delete}>Delete</Text>
-              </TouchableOpacity>
-            </View>
           </View>
+        ) : (
+          <FlatList
+            data={students}
+            keyExtractor={(item) => String(item.id)}
+            renderItem={({ item }) => (
+              <StudentCard
+                item={item}
+                onEdit={selectForEdit}
+                onDelete={deleteStudent}
+              />
+            )}
+            scrollEnabled={false}
+          />
         )}
-      />
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: "#f5f5f5" },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 12 },
-  input: {
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 8,
+  screen: {
+    flex: 1,
+    backgroundColor: colors.bodyBg,
   },
-  btn: {
-    backgroundColor: "#3498db",
-    padding: 12,
-    borderRadius: 8,
+  scroll: {
+    flex: 1,
+  },
+  container: {
+    padding: spacing[3],
+    paddingBottom: spacing[5],
+  },
+  // Navbar
+  navbar: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 8,
-  },
-  btnText: { color: "#fff", fontWeight: "bold" },
-  card: {
-    backgroundColor: "#fff",
-    padding: 12,
+    backgroundColor: colors.primary,
     borderRadius: 8,
-    marginBottom: 8,
-    elevation: 2,
+    paddingVertical: spacing[3],
+    paddingHorizontal: spacing[3],
+    marginBottom: spacing[4],
   },
-  name: { fontSize: 16, fontWeight: "bold" },
-  actions: { flexDirection: "row", gap: 12, marginTop: 8 },
-  edit: { color: "#2980b9", fontWeight: "bold" },
-  delete: { color: "#e74c3c", fontWeight: "bold" },
+  navbarBrand: {
+    color: colors.white,
+    fontSize: font.h5,
+    fontWeight: font.weightBold,
+  },
+  navbarCount: {
+    color: colors.white,
+    fontSize: font.sm,
+    opacity: 0.85,
+  },
+  // Section header
+  sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: spacing[3],
+    gap: spacing[2],
+  },
+  sectionTitle: {
+    fontSize: font.sm,
+    fontWeight: font.weightBold,
+    color: colors.mutedText,
+    textTransform: "uppercase",
+    letterSpacing: 1,
+  },
+  divider: {
+    flex: 1,
+    height: 1,
+    backgroundColor: colors.border,
+  },
+  // Empty state
+  emptyState: {
+    alignItems: "center",
+    paddingVertical: spacing[5],
+  },
+  emptyIcon: {
+    fontSize: 40,
+    marginBottom: spacing[2],
+  },
+  emptyText: {
+    fontSize: font.lg,
+    fontWeight: font.weightBold,
+    color: colors.mutedText,
+    marginBottom: spacing[1],
+  },
+  emptySubtext: {
+    fontSize: font.sm,
+    color: colors.mutedText,
+  },
 });
