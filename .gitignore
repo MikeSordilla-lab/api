@@ -2,8 +2,15 @@
 node_modules/
 .expo/
 dist/
+build/
 web-build/
 npm-debug.log*
+*.log
+.env*
+*.tmp
+*.swp
+.vscode/
+.idea/
 
 # Windows reserved device name (causes Git errors on Windows)
 nul

@@ -8,6 +8,7 @@ export const colors = {
   secondary: "#6c757d",
   secondaryActive: "#5c636a",
   success: "#198754",
+  info: "#0dcaf0",
   danger: "#dc3545",
   dangerActive: "#b02a37",
   warning: "#ffc107",
@@ -16,6 +17,7 @@ export const colors = {
   // Surface / neutral
   white: "#ffffff",
   bodyBg: "#f8f9fa",
+  softBg: "#eef2f7",
   border: "#dee2e6",
   text: "#212529",
   mutedText: "#6c757d",
@@ -38,6 +40,12 @@ export const radius = {
   base: 6, // $border-radius: 0.375rem
   card: 8, // $border-radius-lg: 0.5rem
   pill: 50,
+};
+
+export const layout = {
+  containerMax: 980,
+  modalMax: 520,
+  touchMinHeight: 44,
 };
 
 export const font = {
@@ -65,6 +73,7 @@ export const shadow = {
 export const btnBase = {
   paddingVertical: spacing[2], // 8px  (Bootstrap .btn py)
   paddingHorizontal: spacing[3], // 16px (Bootstrap .btn px)
+  minHeight: layout.touchMinHeight,
   borderRadius: radius.base,
   alignItems: "center",
   justifyContent: "center",

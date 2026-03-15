@@ -1,12 +1,21 @@
 import { useState } from "react";
 import {
+  ActivityIndicator,
   View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import { colors, spacing, radius, font, shadow } from "../theme/bootstrap";
+import {
+  btnBase,
+  colors,
+  inputBase,
+  spacing,
+  radius,
+  font,
+  shadow,
+} from "../theme/bootstrap";
 
 export default function StudentForm({
   editingId,
@@ -18,6 +27,11 @@ export default function StudentForm({
   setRatings,
   onSubmit,
   onCancel,
+  title,
+  submitLabel,
+  showCancel,
+  submitDisabled = false,
+  isSubmitting = false,
 }) {
   const [focused, setFocused] = useState(null);
   const [errors, setErrors] = useState({});
@@ -57,7 +71,7 @@ export default function StudentForm({
       {/* Card header */}
       <View style={styles.cardHeader}>
         <Text style={styles.cardTitle}>
-          {editingId ? "✎ Edit Student" : "＋ Add Student"}
+          {title || (editingId ? "✎ Edit Student" : "＋ Add Student")}
         </Text>
       </View>
 
@@ -126,20 +140,29 @@ export default function StudentForm({
 
         {/* Submit button */}
         <TouchableOpacity
-          style={styles.btnPrimary}
+          style={[styles.btnPrimary, submitDisabled && styles.btnDisabled]}
           onPress={handleSubmit}
+          disabled={submitDisabled}
           activeOpacity={0.85}
         >
-          <Text style={styles.btnPrimaryText}>
-            {editingId ? "Update Student" : "Add Student"}
-          </Text>
+          {isSubmitting ? (
+            <View style={styles.submitLoadingRow}>
+              <ActivityIndicator size="small" color={colors.white} />
+              <Text style={styles.btnPrimaryText}>Saving...</Text>
+            </View>
+          ) : (
+            <Text style={styles.btnPrimaryText}>
+              {submitLabel || (editingId ? "Update Student" : "Add Student")}
+            </Text>
+          )}
         </TouchableOpacity>
 
         {/* Cancel button — only visible in edit mode */}
-        {editingId ? (
+        {(showCancel ?? Boolean(editingId)) ? (
           <TouchableOpacity
-            style={styles.btnSecondary}
+            style={[styles.btnSecondary, submitDisabled && styles.btnDisabled]}
             onPress={onCancel}
+            disabled={submitDisabled}
             activeOpacity={0.85}
           >
             <Text style={styles.btnSecondaryText}>Cancel</Text>
@@ -190,18 +213,15 @@ const styles = StyleSheet.create({
     marginBottom: spacing[1],
   },
   input: {
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.base,
-    paddingVertical: spacing[2],
-    paddingHorizontal: 12,
-    fontSize: font.base,
-    color: colors.text,
+    ...inputBase,
   },
   inputFocused: {
     borderColor: colors.focusRing,
-    borderWidth: 2,
+    shadowColor: colors.focusRing,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.35,
+    shadowRadius: 4,
+    elevation: 1,
   },
   inputError: {
     borderColor: colors.danger,
@@ -212,11 +232,8 @@ const styles = StyleSheet.create({
     marginTop: spacing[1],
   },
   btnPrimary: {
+    ...btnBase,
     backgroundColor: colors.primary,
-    paddingVertical: spacing[2],
-    paddingHorizontal: spacing[3],
-    borderRadius: radius.base,
-    alignItems: "center",
     marginBottom: spacing[2],
   },
   btnPrimaryText: {
@@ -224,16 +241,21 @@ const styles = StyleSheet.create({
     fontSize: font.base,
     fontWeight: font.weightBold,
   },
-  btnSecondary: {
-    backgroundColor: colors.secondary,
-    paddingVertical: spacing[2],
-    paddingHorizontal: spacing[3],
-    borderRadius: radius.base,
+  submitLoadingRow: {
+    flexDirection: "row",
     alignItems: "center",
+    gap: spacing[2],
+  },
+  btnSecondary: {
+    ...btnBase,
+    backgroundColor: colors.secondary,
   },
   btnSecondaryText: {
     color: colors.white,
     fontSize: font.base,
     fontWeight: font.weightBold,
+  },
+  btnDisabled: {
+    opacity: 0.6,
   },
 });

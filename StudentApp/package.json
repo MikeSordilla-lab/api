@@ -15,7 +15,9 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-native": "0.79.0",
-    "react-native-web": "~0.20.0"
+    "react-native-awesome-alerts": "^2.0.0",
+    "react-native-web": "~0.20.0",
+    "sweetalert2": "^11.26.22"
   },
   "private": true
 }

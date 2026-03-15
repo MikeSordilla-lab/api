@@ -1,22 +1,12 @@
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
-import { colors, spacing, radius, font, shadow } from "../theme/bootstrap";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { btnBase, colors, spacing, radius, font, shadow } from "../theme/bootstrap";
 
-export default function StudentCard({ item, onEdit, onDelete }) {
-  const handleDelete = () => {
-    Alert.alert(
-      "Delete Student",
-      `Delete ${item.firstname} ${item.lastname}?`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: () => onDelete(item.id),
-        },
-      ],
-    );
-  };
-
+export default function StudentCard({
+  item,
+  onEdit,
+  onDelete,
+  disabled = false,
+}) {
   return (
     <View style={styles.card}>
       {/* Card body */}
@@ -36,6 +26,7 @@ export default function StudentCard({ item, onEdit, onDelete }) {
         <TouchableOpacity
           style={[styles.btn, styles.btnWarning]}
           onPress={() => onEdit(item)}
+          disabled={disabled}
           activeOpacity={0.8}
         >
           <Text style={styles.btnWarningText}>✎ Edit</Text>
@@ -43,7 +34,8 @@ export default function StudentCard({ item, onEdit, onDelete }) {
 
         <TouchableOpacity
           style={[styles.btn, styles.btnDanger]}
-          onPress={handleDelete}
+          onPress={() => onDelete(item)}
+          disabled={disabled}
           activeOpacity={0.8}
         >
           <Text style={styles.btnText}>✕ Delete</Text>
@@ -99,17 +91,14 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[2],
     borderTopWidth: 1,
     borderTopColor: colors.border,
-    backgroundColor: colors.bodyBg,
+    backgroundColor: colors.softBg,
     borderBottomLeftRadius: radius.card,
     borderBottomRightRadius: radius.card,
   },
   btn: {
+    ...btnBase,
     flex: 1,
-    paddingVertical: spacing[2] - 2,
     paddingHorizontal: spacing[2],
-    borderRadius: radius.base,
-    alignItems: "center",
-    justifyContent: "center",
   },
   btnWarning: {
     backgroundColor: colors.warning,
