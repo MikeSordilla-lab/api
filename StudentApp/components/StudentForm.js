@@ -10,12 +10,14 @@ import {
 import {
   btnBase,
   colors,
+  focusVisibleBase,
   inputBase,
   spacing,
   radius,
   font,
   shadow,
 } from "../theme/bootstrap";
+import { actionLabels } from "../utils/icons";
 
 export default function StudentForm({
   editingId,
@@ -91,6 +93,8 @@ export default function StudentForm({
             }}
             onFocus={() => setFocused("firstname")}
             onBlur={() => setFocused(null)}
+            accessibilityLabel="First name"
+            accessibilityHint="Enter the student's first name"
           />
           {errors.firstname ? (
             <Text style={styles.errorText}>{errors.firstname}</Text>
@@ -111,6 +115,8 @@ export default function StudentForm({
             }}
             onFocus={() => setFocused("lastname")}
             onBlur={() => setFocused(null)}
+            accessibilityLabel="Last name"
+            accessibilityHint="Enter the student's last name"
           />
           {errors.lastname ? (
             <Text style={styles.errorText}>{errors.lastname}</Text>
@@ -132,6 +138,8 @@ export default function StudentForm({
             onFocus={() => setFocused("ratings")}
             onBlur={() => setFocused(null)}
             keyboardType="numeric"
+            accessibilityLabel="Rating"
+            accessibilityHint="Enter a number between 1 and 100"
           />
           {errors.ratings ? (
             <Text style={styles.errorText}>{errors.ratings}</Text>
@@ -144,6 +152,8 @@ export default function StudentForm({
           onPress={handleSubmit}
           disabled={submitDisabled}
           activeOpacity={0.85}
+          accessibilityRole="button"
+          accessibilityLabel={submitLabel || actionLabels.saveStudent}
         >
           {isSubmitting ? (
             <View style={styles.submitLoadingRow}>
@@ -164,6 +174,8 @@ export default function StudentForm({
             onPress={onCancel}
             disabled={submitDisabled}
             activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel="Cancel form changes"
           >
             <Text style={styles.btnSecondaryText}>Cancel</Text>
           </TouchableOpacity>
@@ -216,12 +228,7 @@ const styles = StyleSheet.create({
     ...inputBase,
   },
   inputFocused: {
-    borderColor: colors.focusRing,
-    shadowColor: colors.focusRing,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.35,
-    shadowRadius: 4,
-    elevation: 1,
+    ...focusVisibleBase,
   },
   inputError: {
     borderColor: colors.danger,

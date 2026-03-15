@@ -1,7 +1,14 @@
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { colors, spacing, radius, font, layout } from "../theme/bootstrap";
+import { a11y } from "../utils/accessibility";
 
-export default function StudentModal({ visible, title, onClose, children }) {
+export default function StudentModal({
+  visible,
+  title,
+  onClose,
+  children,
+  closeLabel,
+}) {
   return (
     <Modal
       visible={visible}
@@ -13,8 +20,14 @@ export default function StudentModal({ visible, title, onClose, children }) {
         <Pressable style={styles.container} onPress={() => null}>
           <View style={styles.header}>
             <Text style={styles.title}>{title}</Text>
-            <Pressable style={styles.closeButton} onPress={onClose}>
-              <Text style={styles.closeText}>Close</Text>
+            <Pressable
+              style={styles.closeButton}
+              onPress={onClose}
+              accessibilityRole="button"
+              accessibilityLabel={a11y.modalClose.accessibilityLabel}
+              accessibilityHint={a11y.modalClose.accessibilityHint}
+            >
+              <Text style={styles.closeText}>{closeLabel || "Close"}</Text>
             </Pressable>
           </View>
           <View style={styles.body}>{children}</View>

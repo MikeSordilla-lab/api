@@ -25,6 +25,10 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "apiBaseUrl": "http://192.168.0.78/api",
+      "apiBaseUrlWeb": "http://localhost/api"
     }
-    }
+  }
 }

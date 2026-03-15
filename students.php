@@ -20,7 +20,7 @@ $students = [];
 
 while ($row = $result->fetch_assoc()) {
   $students[] = $row;
-}
+} 
 
 echo json_encode($students);
 

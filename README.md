@@ -67,11 +67,13 @@ A simple student management system with a PHP/MySQL backend and a React Native (
 3. Find your machine's **local IP address** (e.g. `192.168.1.x`):
    - Windows: run `ipconfig` in a terminal and look for **IPv4 Address**
 
-4. Open `App.js` and update `BASE_URL` to point to your machine:
+4. Open `StudentApp/app.json` and update runtime API URLs:
 
-   ```js
-   const BASE_URL = "http://<your-local-ip>/api";
-   // Example: const BASE_URL = "http://192.168.1.10/api";
+   ```json
+   "extra": {
+     "apiBaseUrl": "http://<your-local-ip>/api",
+     "apiBaseUrlWeb": "http://localhost/api"
+   }
    ```
 
    > Make sure your phone and your computer are on the **same Wi-Fi network**.
@@ -97,9 +99,30 @@ api/
 ├── delete_student.php   # DELETE student
 └── StudentApp/          # React Native mobile app
     ├── App.js
+   ├── app.json
     ├── components/
     │   ├── StudentCard.js
-    │   └── StudentForm.js
-    └── theme/  
+   │   ├── StudentForm.js
+   │   └── StudentModal.js
+   ├── services/
+   │   └── studentApi.js
+   ├── utils/
+   │   ├── accessibility.js
+   │   ├── alerts.js
+   │   ├── config.js
+   │   ├── icons.js
+   │   └── optimisticUpdates.js
+    └── theme/
         └── bootstrap.js
 ```
+
+---
+
+## UX Highlights (Current)
+
+- Add and edit student flows are modal-based.
+- Empty-state CTA opens the add-student modal.
+- Skeleton loading, retry button, and pull-to-refresh improve feedback.
+- Search and sort controls support faster list navigation.
+- Optimistic create/update/delete with rollback improves responsiveness.
+- Accessibility labels and focus-visible behavior are included for critical actions.

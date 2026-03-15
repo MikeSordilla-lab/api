@@ -18,6 +18,9 @@ export const colors = {
   white: "#ffffff",
   bodyBg: "#f8f9fa",
   softBg: "#eef2f7",
+  skeletonBase: "#e9ecef",
+  skeletonShimmer: "#f8f9fa",
+  rowHighlight: "#d1e7dd",
   border: "#dee2e6",
   text: "#212529",
   mutedText: "#6c757d",
@@ -46,6 +49,10 @@ export const layout = {
   containerMax: 980,
   modalMax: 520,
   touchMinHeight: 44,
+};
+
+export const motion = {
+  rowHighlightMs: 1800,
 };
 
 export const font = {
@@ -88,4 +95,13 @@ export const inputBase = {
   paddingHorizontal: 12, // Bootstrap form-control px: 0.75rem
   fontSize: font.base,
   color: colors.text,
+};
+
+export const focusVisibleBase = {
+  borderColor: colors.focusRing,
+  shadowColor: colors.focusRing,
+  shadowOffset: { width: 0, height: 0 },
+  shadowOpacity: 0.35,
+  shadowRadius: 4,
+  elevation: 1,
 };

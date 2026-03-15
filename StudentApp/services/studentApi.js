@@ -1,7 +1,7 @@
-const BASE_URL = "http://192.168.0.78/api";
+import { getApiBaseUrl } from "../utils/config";
 
 const postJson = async (path, payload) => {
-  const response = await fetch(`${BASE_URL}/${path}`, {
+  const response = await fetch(`${getApiBaseUrl()}/${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -15,7 +15,7 @@ const postJson = async (path, payload) => {
 };
 
 export const getStudents = async () => {
-  const response = await fetch(`${BASE_URL}/students.php`);
+  const response = await fetch(`${getApiBaseUrl()}/students.php`);
 
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}`);

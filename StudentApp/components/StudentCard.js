@@ -1,14 +1,23 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { btnBase, colors, spacing, radius, font, shadow } from "../theme/bootstrap";
+import {
+  btnBase,
+  colors,
+  spacing,
+  radius,
+  font,
+  shadow,
+} from "../theme/bootstrap";
+import { actionLabels, icons } from "../utils/icons";
 
 export default function StudentCard({
   item,
   onEdit,
   onDelete,
   disabled = false,
+  isHighlighted = false,
 }) {
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, isHighlighted && styles.cardHighlighted]}>
       {/* Card body */}
       <View style={styles.cardBody}>
         <Text style={styles.name}>
@@ -28,8 +37,10 @@ export default function StudentCard({
           onPress={() => onEdit(item)}
           disabled={disabled}
           activeOpacity={0.8}
+          accessibilityRole="button"
+          accessibilityLabel={`${actionLabels.editStudent} ${item.firstname} ${item.lastname}`}
         >
-          <Text style={styles.btnWarningText}>✎ Edit</Text>
+          <Text style={styles.btnWarningText}>{icons.edit} Edit</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -37,8 +48,10 @@ export default function StudentCard({
           onPress={() => onDelete(item)}
           disabled={disabled}
           activeOpacity={0.8}
+          accessibilityRole="button"
+          accessibilityLabel={`${actionLabels.deleteStudent} ${item.firstname} ${item.lastname}`}
         >
-          <Text style={styles.btnText}>✕ Delete</Text>
+          <Text style={styles.btnText}>{icons.delete} Delete</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -59,6 +72,9 @@ const styles = StyleSheet.create({
     shadowRadius: shadow.radius,
     // Android shadow
     elevation: shadow.elevation,
+  },
+  cardHighlighted: {
+    backgroundColor: colors.rowHighlight,
   },
   cardBody: {
     padding: spacing[3],
