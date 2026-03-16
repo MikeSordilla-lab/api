@@ -1,6 +1,8 @@
 import Constants from "expo-constants";
 
 const FALLBACK_BASE_URL = "http://192.168.0.78/api";
+const DEFAULT_AUTH_USERNAME = "admin";
+const SESSION_TIMEOUT_MINUTES = 60;
 
 const normalizeBaseUrl = (value) => {
   const raw = String(value || "").trim();
@@ -27,3 +29,12 @@ export const getConfigSource = () => {
     ? "expo-extra"
     : "fallback-constant";
 };
+
+export const getAuthDefaultUsername = () => DEFAULT_AUTH_USERNAME;
+
+export const getSessionTimeoutMinutes = () => SESSION_TIMEOUT_MINUTES;
+
+export const getAuthConfig = () => ({
+  defaultUsername: getAuthDefaultUsername(),
+  sessionTimeoutMinutes: getSessionTimeoutMinutes(),
+});

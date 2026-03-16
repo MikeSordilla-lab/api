@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   KeyboardAvoidingView,
   Platform,
@@ -14,14 +15,17 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import AwesomeAlert from "react-native-awesome-alerts";
+import LoginPage from "./components/LoginPage";
 import StudentCard from "./components/StudentCard";
 import StudentForm from "./components/StudentForm";
 import StudentModal from "./components/StudentModal";
 import {
   createStudent as apiCreateStudent,
   deleteStudent as apiDeleteStudent,
+  getAuthStatus,
   getStudents,
+  login as apiLogin,
+  logout as apiLogout,
   updateStudent as apiUpdateStudent,
 } from "./services/studentApi";
 import {
@@ -37,6 +41,8 @@ import {
   isSuccessStatus,
   showDeleteConfirmation,
   showErrorAlert,
+  showInvalidCredentialAlert,
+  showSessionExpiredAlert,
   showSuccessAlert,
 } from "./utils/alerts";
 import {
@@ -47,7 +53,7 @@ import {
 } from "./utils/optimisticUpdates";
 import { a11y } from "./utils/accessibility";
 import { actionLabels, icons } from "./utils/icons";
-import { getConfigSource } from "./utils/config";
+import { getAuthConfig } from "./utils/config";
 
 const MIN_LOADING_MS = 1750;
 
@@ -63,6 +69,7 @@ const initialFormValues = { firstname: "", lastname: "", ratings: "" };
 
 export default function App() {
   const { width } = useWindowDimensions();
+  const authConfig = getAuthConfig();
 
   const [students, setStudents] = useState([]);
   const [firstname, setFirstname] = useState("");
@@ -78,6 +85,13 @@ export default function App() {
   const [errorMessage, setErrorMessage] = useState("");
   const [highlightedId, setHighlightedId] = useState(null);
   const [focusedControl, setFocusedControl] = useState("");
+  const [username, setUsername] = useState(authConfig.defaultUsername);
+  const [password, setPassword] = useState("");
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authUser, setAuthUser] = useState("");
+  const [authErrorMessage, setAuthErrorMessage] = useState("");
+  const [pendingAddIntent, setPendingAddIntent] = useState(false);
 
   const [searchText, setSearchText] = useState("");
   const [sortIndex, setSortIndex] = useState(0);
@@ -90,40 +104,31 @@ export default function App() {
 
   const [editSnapshot, setEditSnapshot] = useState(initialFormValues);
 
-  const [nativeAlert, setNativeAlert] = useState({
-    visible: false,
-    type: "success",
-    title: "",
-    message: "",
-    onConfirm: null,
-  });
-
   const isWide = width >= 920;
 
   const openNativeAlert = ({ type, title, message, onConfirm }) => {
-    setNativeAlert({
-      visible: true,
-      type: type || "success",
-      title: title || "Notice",
-      message: message || "",
-      onConfirm: onConfirm || null,
-    });
-  };
+    const alertType = type || "success";
+    const alertTitle = title || "Notice";
+    const alertMessage = message || "";
 
-  const closeNativeAlert = () => {
-    setNativeAlert((current) => ({
-      ...current,
-      visible: false,
-      onConfirm: null,
-    }));
-  };
-
-  const handleNativeConfirm = () => {
-    const action = nativeAlert.onConfirm;
-    closeNativeAlert();
-    if (typeof action === "function") {
-      action();
+    if (alertType === "confirm") {
+      Alert.alert(alertTitle, alertMessage, [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: typeof onConfirm === "function" ? onConfirm : undefined,
+        },
+      ]);
+      return;
     }
+
+    Alert.alert(alertTitle, alertMessage, [
+      {
+        text: "OK",
+        onPress: typeof onConfirm === "function" ? onConfirm : undefined,
+      },
+    ]);
   };
 
   const clearForm = () => {
@@ -162,6 +167,17 @@ export default function App() {
       ratings.trim() !== String(editSnapshot.ratings).trim());
 
   const openAddModal = () => {
+    if (!isAuthenticated) {
+      setPendingAddIntent(true);
+      setAuthErrorMessage("Please log in to add a student.");
+      showErrorAlert({
+        title: "Login Required",
+        message: "Please log in first to add a student.",
+        onNativeAlert: openNativeAlert,
+      });
+      return;
+    }
+
     setIsEditModalVisible(false);
     clearForm();
     setIsAddModalVisible(true);
@@ -238,9 +254,89 @@ export default function App() {
     return [];
   };
 
+  const bootstrapAuthState = async () => {
+    setIsAuthLoading(true);
+
+    try {
+      const auth = await getAuthStatus();
+      if (auth?.authenticated) {
+        setIsAuthenticated(true);
+        setAuthUser(auth?.user?.username || "");
+        setAuthErrorMessage("");
+      } else {
+        setIsAuthenticated(false);
+        setAuthUser("");
+      }
+    } catch {
+      setIsAuthenticated(false);
+      setAuthUser("");
+      setAuthErrorMessage("Unable to verify login status.");
+    } finally {
+      setIsAuthLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchStudents({ mode: "initial" });
+    bootstrapAuthState();
   }, []);
+
+  const handleLogin = async () => {
+    setIsSubmitting(true);
+    setAuthErrorMessage("");
+
+    try {
+      const data = await apiLogin({ username, password });
+      if (!isSuccessStatus(data?.status)) {
+        throw new Error(data?.message || "Login failed.");
+      }
+
+      setIsAuthenticated(true);
+      setAuthUser(String(username || "").trim());
+      setPassword("");
+
+      setPendingAddIntent(false);
+      setIsAddModalVisible(false);
+    } catch (error) {
+      if (error?.status === 401) {
+        setIsAuthenticated(false);
+        setAuthUser("");
+        setAuthErrorMessage("Invalid username or password.");
+        showInvalidCredentialAlert({ onNativeAlert: openNativeAlert });
+      } else {
+        setAuthErrorMessage(
+          error?.message || "Login failed. Please try again.",
+        );
+        showErrorAlert({
+          title: "Login Error",
+          message: error?.message || "Login failed. Please try again.",
+          onNativeAlert: openNativeAlert,
+        });
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    if (isSubmitting) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await apiLogout();
+    } catch {
+      // Local auth reset is still applied even when server logout fails.
+    } finally {
+      setIsAuthenticated(false);
+      setAuthUser("");
+      setIsAddModalVisible(false);
+      setPendingAddIntent(false);
+      setPassword("");
+      setIsSubmitting(false);
+    }
+  };
 
   const applyRowHighlight = (id) => {
     setHighlightedId(id);
@@ -286,6 +382,17 @@ export default function App() {
       }
     } catch (error) {
       setStudents(rollbackStudents(optimistic.rollback));
+
+      if (error?.status === 401) {
+        setIsAuthenticated(false);
+        setAuthUser("");
+        setPendingAddIntent(true);
+        setIsAddModalVisible(false);
+        setAuthErrorMessage("Session expired. Please log in again.");
+        showSessionExpiredAlert({ onNativeAlert: openNativeAlert });
+        return;
+      }
+
       showErrorAlert({
         title: "Create Error",
         message: error.message || "Failed to create student.",
@@ -444,6 +551,24 @@ export default function App() {
     </View>
   );
 
+  if (!isAuthenticated) {
+    return (
+      <>
+        <LoginPage
+          isSubmitting={isSubmitting}
+          isAuthLoading={isAuthLoading}
+          username={username}
+          password={password}
+          setUsername={setUsername}
+          setPassword={setPassword}
+          onSubmit={handleLogin}
+          authErrorMessage={authErrorMessage}
+          sessionTimeoutMinutes={authConfig.sessionTimeoutMinutes}
+        />
+      </>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.screen}>
       <ScrollView
@@ -465,12 +590,60 @@ export default function App() {
         <View style={styles.navbar}>
           <View>
             <Text style={styles.navbarBrand}>Student List</Text>
-            <Text style={styles.navbarCount}>
-              {displayedStudents.length} students
+            <Text style={styles.navbarMeta}>
+              {displayedStudents.length} students • Logged in as{" "}
+              {authUser || username}
             </Text>
           </View>
 
           <View style={styles.navbarActions}>
+            <TouchableOpacity
+              style={[
+                styles.navButton,
+                styles.refreshButton,
+                focusedControl === "refresh" ? styles.focusVisible : null,
+              ]}
+              onPress={() => fetchStudents({ mode: "refresh" })}
+              onFocus={() => setFocusedControl("refresh")}
+              onBlur={() => setFocusedControl("")}
+              disabled={isRefreshing || isSubmitting}
+              activeOpacity={0.85}
+              accessibilityRole="button"
+              accessibilityLabel={a11y.refreshButton.accessibilityLabel}
+              accessibilityHint={a11y.refreshButton.accessibilityHint}
+            >
+              <View style={styles.refreshButtonRow}>
+                {isRefreshing ? (
+                  <ActivityIndicator size="small" color={colors.mutedText} />
+                ) : (
+                  <Text style={styles.refreshIcon}>{icons.refresh}</Text>
+                )}
+                <Text style={styles.refreshButtonText}>
+                  {isRefreshing ? "Refreshing..." : actionLabels.refreshList}
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            {isAuthenticated ? (
+              <TouchableOpacity
+                style={[
+                  styles.navButton,
+                  styles.logoutButton,
+                  focusedControl === "logout" ? styles.focusVisible : null,
+                ]}
+                onPress={handleLogout}
+                onFocus={() => setFocusedControl("logout")}
+                onBlur={() => setFocusedControl("")}
+                disabled={isSubmitting}
+                activeOpacity={0.85}
+                accessibilityRole="button"
+                accessibilityLabel="Log out"
+                accessibilityHint="Logs out and requires login for add student"
+              >
+                <Text style={styles.logoutButtonText}>Log Out</Text>
+              </TouchableOpacity>
+            ) : null}
+
             <TouchableOpacity
               style={[
                 styles.navButton,
@@ -489,33 +662,6 @@ export default function App() {
               <Text style={styles.navButtonText}>
                 {icons.add} {actionLabels.addStudent}
               </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.navButton,
-                styles.refreshButton,
-                focusedControl === "refresh" ? styles.focusVisible : null,
-              ]}
-              onPress={() => fetchStudents({ mode: "refresh" })}
-              onFocus={() => setFocusedControl("refresh")}
-              onBlur={() => setFocusedControl("")}
-              disabled={isRefreshing || isSubmitting}
-              activeOpacity={0.85}
-              accessibilityRole="button"
-              accessibilityLabel={a11y.refreshButton.accessibilityLabel}
-              accessibilityHint={a11y.refreshButton.accessibilityHint}
-            >
-              <View style={styles.refreshButtonRow}>
-                {isRefreshing ? (
-                  <ActivityIndicator size="small" color={colors.warningText} />
-                ) : (
-                  <Text style={styles.refreshIcon}>{icons.refresh}</Text>
-                )}
-                <Text style={styles.refreshButtonText}>
-                  {isRefreshing ? "Refreshing..." : actionLabels.refreshList}
-                </Text>
-              </View>
             </TouchableOpacity>
           </View>
         </View>
@@ -625,8 +771,6 @@ export default function App() {
             </TouchableOpacity>
           </View>
         ) : null}
-
-        <Text style={styles.configMeta}>API source: {getConfigSource()}</Text>
       </ScrollView>
 
       <StudentModal
@@ -682,30 +826,6 @@ export default function App() {
           />
         </KeyboardAvoidingView>
       </StudentModal>
-
-      <AwesomeAlert
-        show={nativeAlert.visible}
-        showProgress={false}
-        title={nativeAlert.title}
-        message={nativeAlert.message}
-        closeOnTouchOutside={false}
-        closeOnHardwareBackPress={false}
-        showCancelButton={nativeAlert.type === "confirm"}
-        showConfirmButton
-        cancelText="Cancel"
-        confirmText={nativeAlert.type === "confirm" ? "Delete" : "OK"}
-        confirmButtonColor={
-          nativeAlert.type === "error" || nativeAlert.type === "confirm"
-            ? colors.danger
-            : colors.primary
-        }
-        onCancelPressed={closeNativeAlert}
-        onConfirmPressed={
-          nativeAlert.type === "confirm"
-            ? handleNativeConfirm
-            : closeNativeAlert
-        }
-      />
     </SafeAreaView>
   );
 }
@@ -728,40 +848,61 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   navbar: {
-    gap: spacing[3],
-    backgroundColor: colors.primary,
-    borderRadius: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: colors.bodyBg,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.border,
     paddingVertical: spacing[3],
     paddingHorizontal: spacing[3],
     marginBottom: spacing[3],
   },
   navbarBrand: {
-    color: colors.white,
+    color: colors.text,
     fontSize: font.h5,
     fontWeight: font.weightBold,
   },
-  navbarCount: {
-    color: colors.white,
+  navbarMeta: {
+    color: colors.mutedText,
     fontSize: font.sm,
-    opacity: 0.9,
+    marginTop: spacing[1],
   },
   navbarActions: {
     flexDirection: "row",
     gap: spacing[2],
+    alignItems: "center",
+    marginLeft: spacing[2],
   },
   navButton: {
     ...btnBase,
     paddingHorizontal: spacing[2],
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    minHeight: 52,
   },
   addButton: {
-    backgroundColor: colors.success,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   refreshButton: {
-    backgroundColor: colors.warning,
+    backgroundColor: colors.white,
+    borderColor: colors.border,
+  },
+  logoutButton: {
+    backgroundColor: colors.white,
+    borderColor: colors.border,
   },
   navButtonText: {
     color: colors.white,
-    fontSize: font.sm,
+    fontSize: font.base,
+    fontWeight: font.weightBold,
+  },
+  logoutButtonText: {
+    color: colors.danger,
+    fontSize: font.base,
     fontWeight: font.weightBold,
   },
   refreshButtonRow: {
@@ -770,12 +911,12 @@ const styles = StyleSheet.create({
     gap: spacing[1],
   },
   refreshButtonText: {
-    color: colors.warningText,
-    fontSize: font.sm,
+    color: colors.mutedText,
+    fontSize: font.base,
     fontWeight: font.weightBold,
   },
   refreshIcon: {
-    color: colors.warningText,
+    color: colors.mutedText,
     fontSize: font.base,
     fontWeight: font.weightBold,
   },
@@ -920,10 +1061,5 @@ const styles = StyleSheet.create({
   },
   focusVisible: {
     ...focusVisibleBase,
-  },
-  configMeta: {
-    marginTop: spacing[3],
-    fontSize: font.sm,
-    color: colors.mutedText,
   },
 });

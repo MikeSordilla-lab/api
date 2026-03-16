@@ -4,7 +4,9 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { exit(0); }
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+  exit(0);
+}
 
 include "db.php";
 
@@ -19,8 +21,14 @@ if (!$result) {
 $students = [];
 
 while ($row = $result->fetch_assoc()) {
+  if (isset($row['id'])) {
+    $row['id'] = (int) $row['id'];
+  }
+  if (isset($row['ratings'])) {
+    $row['ratings'] = (float) $row['ratings'];
+  }
   $students[] = $row;
-} 
+}
 
 echo json_encode($students);
 

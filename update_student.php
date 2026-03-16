@@ -26,10 +26,14 @@ $last_update = date('Y-m-d H:i:s');
 $stmt = $conn->prepare(
   "UPDATE student_list SET firstname=?,lastname=?, ratings=?,last_update=? WHERE id=?"
 );
-$stmt->bind_param("ssisi", $firstname, $lastname, $ratings, $last_update, $id);
+$stmt->bind_param("ssdsi", $firstname, $lastname, $ratings, $last_update, $id);
 
 if ($stmt->execute()) {
-  echo json_encode(["status" => "ok", "message" => "Student's information has been updated."]);
+  if ($stmt->affected_rows > 0) {
+    echo json_encode(["status" => "ok", "message" => "Student's information has been updated."]);
+  } else {
+    echo json_encode(["status" => "failed", "message" => "Student not found."]);
+  }
 } else {
   echo json_encode(["status" => "failed", "message" => "Error updating student."]);
 }

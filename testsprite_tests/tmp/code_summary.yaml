@@ -1,0 +1,109 @@
+version: "2"
+type: backend
+tech_stack:
+  - PHP
+  - Custom PHP scripts (XAMPP/Apache)
+  - MySQL
+  - Session-based authentication
+features:
+  - name: Authentication API
+    description: Session login/logout and auth session introspection endpoints.
+    files:
+      - login.php
+      - logout.php
+      - me.php
+      - auth_config.php
+      - auth_session.php
+      - auth_guard.php
+    endpoints:
+      - method: POST
+        path: /api/login.php
+        description: Authenticate user and create server-side session.
+        auth_required: false
+        request_schema:
+          body:
+            username: string
+            password: string
+        response_schema:
+          "200":
+            status: ok | failed
+            message: string
+      - method: POST
+        path: /api/logout.php
+        description: Destroy active session for authenticated user.
+        auth_required: false
+        response_schema:
+          "200":
+            status: ok | failed
+            message: string
+      - method: GET
+        path: /api/me.php
+        description: Return current authentication/session status.
+        auth_required: false
+        response_schema:
+          "200":
+            authenticated: boolean
+            user: string | null
+    depends_on: []
+  - name: Student Management API
+    description: CRUD operations for student records with create endpoint protected by auth guard.
+    files:
+      - students.php
+      - create_student.php
+      - update_student.php
+      - delete_student.php
+      - db.php
+    endpoints:
+      - method: GET
+        path: /api/students.php
+        description: Retrieve all students.
+        auth_required: false
+        response_schema:
+          "200": Student[]
+      - method: POST
+        path: /api/create_student.php
+        description: Create a new student record.
+        auth_required: true
+        request_schema:
+          body:
+            firstname: string
+            lastname: string
+            ratings: number
+        response_schema:
+          "200":
+            status: ok | failed
+            message: string
+      - method: POST
+        path: /api/update_student.php
+        description: Update an existing student record.
+        auth_required: false
+        request_schema:
+          body:
+            id: number
+            firstname: string
+            lastname: string
+            ratings: number
+        response_schema:
+          "200":
+            status: ok | failed
+            message: string
+      - method: POST
+        path: /api/delete_student.php
+        description: Delete a student by id.
+        auth_required: false
+        request_schema:
+          body:
+            id: number
+        response_schema:
+          "200":
+            status: ok | failed
+            message: string
+    depends_on:
+      - Authentication API
+known_limitations:
+  - issue: Inconsistent authentication enforcement across mutation endpoints.
+    location: create_student.php, update_student.php, delete_student.php
+    impact: Update/delete actions may be callable without authentication.
+  - issue: Input validation rules are minimal and may allow malformed values.
+    location: create_student.php, update_student.php
+    impact: Invalid data may be accepted or produce inconsistent error handling.

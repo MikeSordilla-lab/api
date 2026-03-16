@@ -1,0 +1,208 @@
+[
+  {
+    "id": "MOB001",
+    "title": "Login form remains usable when mobile keyboard opens",
+    "description": "Verify username/password inputs and Sign In button stay visible or reachable when software keyboard is shown.",
+    "category": "Mobile Keyboard Behavior",
+    "priority": "High",
+    "preconditions": [
+      "App is opened on mobile device or emulator.",
+      "User is on login screen."
+    ],
+    "steps": [
+      "Tap Username input and type a value.",
+      "Tap Password input and type a value.",
+      "Observe view shift behavior while keyboard is open.",
+      "Tap Sign In without dismissing keyboard."
+    ],
+    "expected": [
+      "Focused input is not hidden by keyboard.",
+      "Sign In button remains tappable (or reachable after small scroll).",
+      "No clipped or overlapped controls."
+    ]
+  },
+  {
+    "id": "MOB002",
+    "title": "Password show/hide control is touch-friendly",
+    "description": "Validate touch target and behavior of the Show/Hide password toggle.",
+    "category": "Touch Gestures",
+    "priority": "Medium",
+    "preconditions": [
+      "User is on login screen."
+    ],
+    "steps": [
+      "Tap Password field and type text.",
+      "Tap Show control once.",
+      "Tap Hide control once."
+    ],
+    "expected": [
+      "Password text visibility toggles correctly.",
+      "Control can be activated reliably with a thumb tap.",
+      "No accidental focus loss or input reset."
+    ]
+  },
+  {
+    "id": "MOB003",
+    "title": "Pull-to-refresh updates student list on mobile",
+    "description": "Verify native pull gesture triggers refresh indicator and list reload.",
+    "category": "Touch Gestures",
+    "priority": "High",
+    "preconditions": [
+      "User is authenticated and sees students list."
+    ],
+    "steps": [
+      "Swipe down from top of list to trigger pull-to-refresh.",
+      "Wait for refresh indicator to stop."
+    ],
+    "expected": [
+      "Refresh spinner appears during pull refresh.",
+      "List data is re-fetched without app freeze.",
+      "No duplicate rows introduced after refresh."
+    ]
+  },
+  {
+    "id": "MOB004",
+    "title": "Student card actions are easy to tap on small screens",
+    "description": "Validate Edit/Delete buttons on each card are not cramped or overlapping.",
+    "category": "Small-Screen Layout",
+    "priority": "High",
+    "preconditions": [
+      "User is authenticated and sees at least one student card.",
+      "Device width is <= 390dp."
+    ],
+    "steps": [
+      "Scroll to a middle card in the list.",
+      "Tap Edit once.",
+      "Close modal.",
+      "Tap Delete once and cancel confirmation."
+    ],
+    "expected": [
+      "Each action responds to a single tap.",
+      "Touch areas do not overlap.",
+      "Card layout remains readable without truncating key info."
+    ]
+  },
+  {
+    "id": "MOB005",
+    "title": "Add Student modal handles keyboard overlap",
+    "description": "Verify modal inputs and action buttons remain usable when keyboard is open in create flow.",
+    "category": "Mobile Keyboard Behavior",
+    "priority": "High",
+    "preconditions": [
+      "User is authenticated on students screen."
+    ],
+    "steps": [
+      "Tap Add Student.",
+      "Focus First Name, Last Name, and Ratings fields one by one.",
+      "Type valid values.",
+      "Submit while keyboard is visible."
+    ],
+    "expected": [
+      "Focused field remains visible above keyboard.",
+      "Submit and Cancel controls remain reachable.",
+      "Create action succeeds without layout jump glitches."
+    ]
+  },
+  {
+    "id": "MOB006",
+    "title": "Unsaved changes prompt works in modal with touch actions",
+    "description": "Validate Cancel vs Discard paths in the unsaved-changes confirmation on mobile.",
+    "category": "Touch Gestures",
+    "priority": "High",
+    "preconditions": [
+      "User is in Add Student modal with at least one edited field."
+    ],
+    "steps": [
+      "Tap modal close or Cancel action.",
+      "In confirmation dialog, tap Cancel and verify modal remains.",
+      "Tap close again.",
+      "Tap Discard in confirmation dialog."
+    ],
+    "expected": [
+      "First Cancel keeps modal open with entered values.",
+      "Discard closes modal and clears form state.",
+      "No accidental data loss without explicit Discard action."
+    ]
+  },
+  {
+    "id": "MOB007",
+    "title": "Search and sort controls remain accessible at 320dp width",
+    "description": "Verify search input and sort button layout for very small mobile widths.",
+    "category": "Small-Screen Layout",
+    "priority": "Medium",
+    "preconditions": [
+      "User is authenticated.",
+      "Viewport width is set to 320dp (or smallest available)."
+    ],
+    "steps": [
+      "Type query text in Search input.",
+      "Tap Sort button to cycle modes at least twice."
+    ],
+    "expected": [
+      "Search input remains editable and visible.",
+      "Sort button remains fully visible and tappable.",
+      "No horizontal clipping or overlap between controls."
+    ]
+  },
+  {
+    "id": "MOB008",
+    "title": "Delete confirmation dialog is readable and actionable on phone",
+    "description": "Validate confirmation prompt content and action buttons on small mobile screens.",
+    "category": "Small-Screen Layout",
+    "priority": "Medium",
+    "preconditions": [
+      "User is authenticated with at least one student record."
+    ],
+    "steps": [
+      "Tap Delete on a student card.",
+      "Observe dialog content and action buttons.",
+      "Tap Cancel.",
+      "Open dialog again and tap Delete."
+    ],
+    "expected": [
+      "Dialog text is not truncated.",
+      "Buttons are clearly labeled and separated.",
+      "Cancel keeps data unchanged; Delete removes target student."
+    ]
+  },
+  {
+    "id": "MOB009",
+    "title": "Orientation change preserves interactive state",
+    "description": "Verify UI remains stable when rotating portrait to landscape and back.",
+    "category": "Responsive Mobile Behavior",
+    "priority": "Medium",
+    "preconditions": [
+      "User is authenticated on students screen."
+    ],
+    "steps": [
+      "Rotate device to landscape.",
+      "Use Search and open Add Student modal.",
+      "Rotate back to portrait."
+    ],
+    "expected": [
+      "App does not crash or reset unexpectedly.",
+      "Current form/list state remains consistent.",
+      "Controls remain reachable after orientation changes."
+    ]
+  },
+  {
+    "id": "MOB010",
+    "title": "Tap reliability under quick repeated interactions",
+    "description": "Ensure repeated taps on refresh/add/logout do not create duplicate actions or locked UI.",
+    "category": "Touch Gestures",
+    "priority": "Medium",
+    "preconditions": [
+      "User is authenticated on students screen."
+    ],
+    "steps": [
+      "Double-tap Refresh quickly.",
+      "Double-tap Add Student and close modal.",
+      "Tap Logout once while app is idle."
+    ],
+    "expected": [
+      "Refresh runs once or serially without UI corruption.",
+      "Only one add modal is presented at a time.",
+      "Logout cleanly returns to login screen."
+    ]
+  }
+]

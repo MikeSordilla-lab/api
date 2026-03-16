@@ -51,6 +51,22 @@ export const showErrorAlert = ({ title = "Error", message, onNativeAlert }) => {
   return Promise.resolve();
 };
 
+export const showInvalidCredentialAlert = ({ onNativeAlert }) => {
+  return showErrorAlert({
+    title: "Login Failed",
+    message: "Invalid username or password.",
+    onNativeAlert,
+  });
+};
+
+export const showSessionExpiredAlert = ({ onNativeAlert }) => {
+  return showErrorAlert({
+    title: "Session Expired",
+    message: "Your session expired. Please log in again.",
+    onNativeAlert,
+  });
+};
+
 export const showDeleteConfirmation = ({
   studentName,
   onConfirm,

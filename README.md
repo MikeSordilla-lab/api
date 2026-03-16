@@ -48,6 +48,22 @@ A simple student management system with a PHP/MySQL backend and a React Native (
 
 6. Verify the API works by visiting `http://localhost/api/students.php` in your browser — you should see a JSON response.
 
+7. Authentication setup for add-student protection:
+   - Default login credential:
+     - Username: `admin`
+     - Password: `admin123`
+   - Optional overrides via environment variables before starting Apache:
+     - `STUDENTAPP_AUTH_USER`
+     - `STUDENTAPP_AUTH_PASS`
+   - Session timeout is `60` minutes of inactivity.
+
+8. New auth endpoints:
+   - `POST /api/login.php`
+   - `POST /api/logout.php`
+   - `GET /api/me.php`
+
+   Student creation (`POST /api/create_student.php`) now requires authentication and returns HTTP `401` when unauthenticated.
+
 ---
 
 ## 2. Set Up the Mobile App
@@ -92,7 +108,13 @@ A simple student management system with a PHP/MySQL backend and a React Native (
 
 ```
 api/
+├── auth_config.php     # Auth credential + timeout configuration
+├── auth_session.php    # Session bootstrap and timeout handling
+├── auth_guard.php      # Auth guard + JSON response helpers
 ├── db.php               # Database connection
+├── login.php            # POST login (creates session)
+├── logout.php           # POST logout (destroys session)
+├── me.php               # GET auth session status
 ├── students.php         # GET all students
 ├── create_student.php   # POST create student
 ├── update_student.php   # PUT update student

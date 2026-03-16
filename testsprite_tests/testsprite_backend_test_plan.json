@@ -1,0 +1,37 @@
+[
+  {
+    "id": "TC001",
+    "title": "post api login php with valid and invalid credentials",
+    "description": "Test the POST /api/login.php endpoint with valid username and password to receive a successful authentication response and session cookie. Also test with invalid password to verify failure response and no session cookie."
+  },
+  {
+    "id": "TC002",
+    "title": "post api logout php session termination",
+    "description": "Test the POST /api/logout.php endpoint to ensure it properly destroys the active session for an authenticated user and returns a success status."
+  },
+  {
+    "id": "TC003",
+    "title": "get api me php session introspection",
+    "description": "Test the GET /api/me.php endpoint to verify it returns the correct authentication status and user information based on the presence or absence of a valid session cookie."
+  },
+  {
+    "id": "TC004",
+    "title": "get api students php retrieve all students",
+    "description": "Test the GET /api/students.php endpoint to ensure it returns a list of all student records with correct fields and no authentication required."
+  },
+  {
+    "id": "TC005",
+    "title": "post api create student php with authentication",
+    "description": "Test the POST /api/create_student.php endpoint with valid session cookie and valid student data to create a new student record successfully. Also test without session cookie to verify unauthorized access handling."
+  },
+  {
+    "id": "TC006",
+    "title": "post api update student php with existing and non existing id",
+    "description": "Test the POST /api/update_student.php endpoint with valid session cookie and existing student id to update the record successfully. Also test with non-existent id to verify failure response. Test without session cookie to observe authentication enforcement behavior."
+  },
+  {
+    "id": "TC007",
+    "title": "post api delete student php with existing and non existing id",
+    "description": "Test the POST /api/delete_student.php endpoint with valid session cookie and existing student id to delete the record successfully. Also test with non-existent id to verify failure response. Test without session cookie to observe authentication enforcement behavior."
+  }
+]

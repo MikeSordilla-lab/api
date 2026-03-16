@@ -20,13 +20,18 @@ import {
 import { actionLabels } from "../utils/icons";
 
 export default function StudentForm({
+  mode = "student",
   editingId,
   firstname,
   lastname,
   ratings,
+  username,
+  password,
   setFirstname,
   setLastname,
   setRatings,
+  setUsername,
+  setPassword,
   onSubmit,
   onCancel,
   title,
@@ -40,6 +45,15 @@ export default function StudentForm({
 
   const validate = () => {
     const errs = {};
+
+    if (mode === "login") {
+      if (!String(username || "").trim())
+        errs.username = "Username is required.";
+      if (!String(password || "").trim())
+        errs.password = "Password is required.";
+      return errs;
+    }
+
     if (!firstname.trim()) errs.firstname = "First name is required.";
     if (!lastname.trim()) errs.lastname = "Last name is required.";
     if (!ratings.trim()) {
@@ -68,83 +82,143 @@ export default function StudentForm({
     errors[field] && styles.inputError,
   ];
 
+  const isLoginMode = mode === "login";
+
   return (
     <View style={styles.card}>
       {/* Card header */}
       <View style={styles.cardHeader}>
         <Text style={styles.cardTitle}>
-          {title || (editingId ? "✎ Edit Student" : "＋ Add Student")}
+          {title ||
+            (isLoginMode
+              ? "Login Required"
+              : editingId
+                ? "✎ Edit Student"
+                : "＋ Add Student")}
         </Text>
       </View>
 
       {/* Card body — form fields */}
       <View style={styles.cardBody}>
-        {/* First Name */}
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>First Name</Text>
-          <TextInput
-            style={inputStyle("firstname")}
-            placeholder="Enter first name"
-            placeholderTextColor={colors.placeholder}
-            value={firstname}
-            onChangeText={(v) => {
-              setFirstname(v);
-              setErrors((e) => ({ ...e, firstname: null }));
-            }}
-            onFocus={() => setFocused("firstname")}
-            onBlur={() => setFocused(null)}
-            accessibilityLabel="First name"
-            accessibilityHint="Enter the student's first name"
-          />
-          {errors.firstname ? (
-            <Text style={styles.errorText}>{errors.firstname}</Text>
-          ) : null}
-        </View>
+        {isLoginMode ? (
+          <>
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Username</Text>
+              <TextInput
+                style={inputStyle("username")}
+                placeholder="Enter username"
+                placeholderTextColor={colors.placeholder}
+                value={username}
+                onChangeText={(v) => {
+                  setUsername(v);
+                  setErrors((e) => ({ ...e, username: null }));
+                }}
+                onFocus={() => setFocused("username")}
+                onBlur={() => setFocused(null)}
+                autoCapitalize="none"
+                autoCorrect={false}
+                accessibilityLabel="Username"
+                accessibilityHint="Enter your login username"
+              />
+              {errors.username ? (
+                <Text style={styles.errorText}>{errors.username}</Text>
+              ) : null}
+            </View>
 
-        {/* Last Name */}
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Last Name</Text>
-          <TextInput
-            style={inputStyle("lastname")}
-            placeholder="Enter last name"
-            placeholderTextColor={colors.placeholder}
-            value={lastname}
-            onChangeText={(v) => {
-              setLastname(v);
-              setErrors((e) => ({ ...e, lastname: null }));
-            }}
-            onFocus={() => setFocused("lastname")}
-            onBlur={() => setFocused(null)}
-            accessibilityLabel="Last name"
-            accessibilityHint="Enter the student's last name"
-          />
-          {errors.lastname ? (
-            <Text style={styles.errorText}>{errors.lastname}</Text>
-          ) : null}
-        </View>
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Password</Text>
+              <TextInput
+                style={inputStyle("password")}
+                placeholder="Enter password"
+                placeholderTextColor={colors.placeholder}
+                value={password}
+                onChangeText={(v) => {
+                  setPassword(v);
+                  setErrors((e) => ({ ...e, password: null }));
+                }}
+                onFocus={() => setFocused("password")}
+                onBlur={() => setFocused(null)}
+                secureTextEntry
+                autoCapitalize="none"
+                autoCorrect={false}
+                accessibilityLabel="Password"
+                accessibilityHint="Enter your login password"
+              />
+              {errors.password ? (
+                <Text style={styles.errorText}>{errors.password}</Text>
+              ) : null}
+            </View>
+          </>
+        ) : (
+          <>
+            {/* First Name */}
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>First Name</Text>
+              <TextInput
+                style={inputStyle("firstname")}
+                placeholder="Enter first name"
+                placeholderTextColor={colors.placeholder}
+                value={firstname}
+                onChangeText={(v) => {
+                  setFirstname(v);
+                  setErrors((e) => ({ ...e, firstname: null }));
+                }}
+                onFocus={() => setFocused("firstname")}
+                onBlur={() => setFocused(null)}
+                accessibilityLabel="First name"
+                accessibilityHint="Enter the student's first name"
+              />
+              {errors.firstname ? (
+                <Text style={styles.errorText}>{errors.firstname}</Text>
+              ) : null}
+            </View>
 
-        {/* Ratings */}
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Rating (1–100)</Text>
-          <TextInput
-            style={inputStyle("ratings")}
-            placeholder="Enter rating"
-            placeholderTextColor={colors.placeholder}
-            value={ratings}
-            onChangeText={(v) => {
-              setRatings(v);
-              setErrors((e) => ({ ...e, ratings: null }));
-            }}
-            onFocus={() => setFocused("ratings")}
-            onBlur={() => setFocused(null)}
-            keyboardType="numeric"
-            accessibilityLabel="Rating"
-            accessibilityHint="Enter a number between 1 and 100"
-          />
-          {errors.ratings ? (
-            <Text style={styles.errorText}>{errors.ratings}</Text>
-          ) : null}
-        </View>
+            {/* Last Name */}
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Last Name</Text>
+              <TextInput
+                style={inputStyle("lastname")}
+                placeholder="Enter last name"
+                placeholderTextColor={colors.placeholder}
+                value={lastname}
+                onChangeText={(v) => {
+                  setLastname(v);
+                  setErrors((e) => ({ ...e, lastname: null }));
+                }}
+                onFocus={() => setFocused("lastname")}
+                onBlur={() => setFocused(null)}
+                accessibilityLabel="Last name"
+                accessibilityHint="Enter the student's last name"
+              />
+              {errors.lastname ? (
+                <Text style={styles.errorText}>{errors.lastname}</Text>
+              ) : null}
+            </View>
+
+            {/* Ratings */}
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Rating (1-100)</Text>
+              <TextInput
+                style={inputStyle("ratings")}
+                placeholder="Enter rating"
+                placeholderTextColor={colors.placeholder}
+                value={ratings}
+                onChangeText={(v) => {
+                  setRatings(v);
+                  setErrors((e) => ({ ...e, ratings: null }));
+                }}
+                onFocus={() => setFocused("ratings")}
+                onBlur={() => setFocused(null)}
+                keyboardType="numeric"
+                accessibilityLabel="Rating"
+                accessibilityHint="Enter a number between 1 and 100"
+              />
+              {errors.ratings ? (
+                <Text style={styles.errorText}>{errors.ratings}</Text>
+              ) : null}
+            </View>
+          </>
+        )}
 
         {/* Submit button */}
         <TouchableOpacity
@@ -162,7 +236,12 @@ export default function StudentForm({
             </View>
           ) : (
             <Text style={styles.btnPrimaryText}>
-              {submitLabel || (editingId ? "Update Student" : "Add Student")}
+              {submitLabel ||
+                (isLoginMode
+                  ? "Sign In"
+                  : editingId
+                    ? "Update Student"
+                    : "Add Student")}
             </Text>
           )}
         </TouchableOpacity>

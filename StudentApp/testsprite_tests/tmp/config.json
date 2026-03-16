@@ -1,0 +1,18 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://127.0.0.1:8081",
+  "executionArgs": {
+    "projectName": "StudentApp",
+    "projectPath": "c:\\xampp\\htdocs\\api\\StudentApp",
+    "testIds": [],
+    "additionalInstruction": "Use existing frontend test plan. Login with admin/admin123.",
+    "serverMode": "development",
+    "envs": {
+      "API_KEY": "sk-user-Gd-ncDhwQFKadNVInbYEnKlD95b2TvA2SsjUEhqcaFTJuppIVcRkqXewsA9hFNIEqVxx1gIp7sN_UQ2a2ZRZLA1eaRRItqPrbQFE4becuGevkv9n8QoXPNRSHz8jJpv-GP8"
+    }
+  },
+  "serverPort": 23755,
+  "proxy": "http://e8393ce5-7ead-48c1-87d9-a5e67bcc3e7d:M6FnLsUpK1iz5M3chOVPqjoftm74alEQ@tun.testsprite.com:8080"
+}
