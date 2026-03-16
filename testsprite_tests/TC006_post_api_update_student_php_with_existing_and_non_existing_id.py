@@ -115,6 +115,7 @@ def test_post_api_update_student_php_with_existing_and_non_existing_id():
             pass
 
     # Test update_student.php without session cookie (no auth)
+    # FIXED: Should now properly return 401 Unauthorized
     no_auth_payload = {
         "id": existing_id if 'existing_id' in locals() else 1,
         "firstname": "NoAuthFirst",
@@ -122,16 +123,12 @@ def test_post_api_update_student_php_with_existing_and_non_existing_id():
         "ratings": 3,
     }
     no_auth_resp = requests.post(UPDATE_STUDENT_URL, json=no_auth_payload, timeout=30)
-    assert no_auth_resp.status_code == 200
+    assert no_auth_resp.status_code == 401, f"Expected 401, got {no_auth_resp.status_code}"
     no_auth_json = no_auth_resp.json()
-    # Due to known inconsistency, status may be 'ok' or 'failed', with possible auth error
-    assert "status" in no_auth_json
+    # Should return failed status with auth message
+    assert no_auth_json.get("status") == "failed", f"Expected failed status, got {no_auth_json.get('status')}"
     assert "message" in no_auth_json
-    # Check message if failed, or status ok means auth enforcement missing
-    assert (
-        no_auth_json["status"] in ("ok", "failed")
-        and isinstance(no_auth_json["message"], str)
-    )
+    assert isinstance(no_auth_json["message"], str)
 
 
 test_post_api_update_student_php_with_existing_and_non_existing_id()

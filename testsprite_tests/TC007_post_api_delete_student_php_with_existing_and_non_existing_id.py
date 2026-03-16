@@ -62,16 +62,14 @@ def test_post_api_delete_student_php_existing_and_non_existing_id():
         assert "not found" in delete_non_exist_json.get("message", "").lower()
 
         # 3) Delete without session cookie to test auth enforcement
-        # Do not send session cookie - use a new Session without cookies
+        # FIXED: Should now properly return 401 Unauthorized
         no_auth_session = requests.Session()
         delete_no_auth_resp = no_auth_session.post(DELETE_STUDENT_URL, json={"id": student_id}, timeout=TIMEOUT)
-        assert delete_no_auth_resp.status_code == 200
+        assert delete_no_auth_resp.status_code == 401, f"Expected 401, got {delete_no_auth_resp.status_code}"
         delete_no_auth_json = delete_no_auth_resp.json()
-        # According to PRD inconsistent enforcement, status could be ok or failed with auth message
-        assert delete_no_auth_json.get("status") in ("ok", "failed")
-        # If failed, message should indicate auth required
-        if delete_no_auth_json.get("status") == "failed":
-            assert "auth" in delete_no_auth_json.get("message", "").lower()
+        # Should return failed status with auth message
+        assert delete_no_auth_json.get("status") == "failed", f"Expected failed status, got {delete_no_auth_json.get('status')}"
+        assert "auth" in delete_no_auth_json.get("message", "").lower()
 
     finally:
         # Cleanup: If student still exists, try to delete with auth to leave system clean

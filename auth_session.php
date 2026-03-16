@@ -19,7 +19,7 @@ function auth_start_session(): void
     'path' => '/',
     'httponly' => true,
     'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
-    'samesite' => 'Lax',
+    'samesite' => 'Strict',
   ]);
 
   session_start();

@@ -1,8 +1,8 @@
 [
   {
     "id": "TC001",
-    "title": "Sign in with valid credentials and land on Students dashboard",
-    "description": "Verifies a user can sign in with correct credentials and reach the students dashboard.",
+    "title": "Successful sign-in navigates from /login to the student dashboard",
+    "description": "Verifies that a user can sign in with valid credentials and is taken to the /students dashboard.",
     "category": "Authentication Session",
     "priority": "High",
     "steps": [
@@ -38,8 +38,8 @@
   },
   {
     "id": "TC002",
-    "title": "Sign in with invalid credentials shows error and stays on Login",
-    "description": "Verifies invalid credentials show an authentication error and the user remains on the login screen.",
+    "title": "Invalid credentials show an authentication error and user stays on /login",
+    "description": "Verifies that incorrect login credentials show an error and do not navigate to the dashboard.",
     "category": "Authentication Session",
     "priority": "High",
     "steps": [
@@ -53,11 +53,11 @@
       },
       {
         "type": "action",
-        "description": "Type \"not_a_real_user\" into the username field"
+        "description": "Type \"nonexistent.user@example.invalid\" into the username field"
       },
       {
         "type": "action",
-        "description": "Type \"wrong_password_123\" into the password field"
+        "description": "Type \"WrongPassword123!\" into the password field"
       },
       {
         "type": "action",
@@ -65,18 +65,18 @@
       },
       {
         "type": "assertion",
-        "description": "Verify text \"Invalid\" is visible"
+        "description": "Verify URL contains \"/login\""
       },
       {
         "type": "assertion",
-        "description": "Verify URL contains \"/login\""
+        "description": "Verify text \"error\" is visible"
       }
     ]
   },
   {
     "id": "TC003",
-    "title": "Toggle show/hide password updates password visibility control",
-    "description": "Verifies the show/hide password control is present and can be toggled while on the login screen.",
+    "title": "Show/hide password toggle does not clear the password value",
+    "description": "Verifies that toggling password visibility keeps the entered password intact.",
     "category": "Authentication Session",
     "priority": "Medium",
     "steps": [
@@ -90,30 +90,26 @@
       },
       {
         "type": "action",
-        "description": "Type \"some_password\" into the password field"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Show password\" is visible"
+        "description": "Type \"SomeSecretPass!\" into the password field"
       },
       {
         "type": "action",
-        "description": "Click on \"Show password\""
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Hide password\" is visible"
+        "description": "Click on the show/hide password control"
       },
       {
         "type": "action",
-        "description": "Click on \"Hide password\""
+        "description": "Click on the show/hide password control"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"SomeSecretPass!\" is visible"
       }
     ]
   },
   {
     "id": "TC004",
-    "title": "Log out from Students dashboard returns to Login",
-    "description": "Verifies a signed-in user can log out and is returned to the login screen.",
+    "title": "Logout from dashboard returns the user to /login",
+    "description": "Verifies that an authenticated user can log out from /students and is returned to the login screen.",
     "category": "Authentication Session",
     "priority": "High",
     "steps": [
@@ -149,8 +145,8 @@
   },
   {
     "id": "TC005",
-    "title": "Authenticated user sees skeleton loading then populated student list",
-    "description": "Verifies that the student list shows skeleton loading placeholders and then renders student cards after data loads.",
+    "title": "List loading error shows retry and succeeds after retry",
+    "description": "Verifies the fetch error state is shown with a retry control, and retry leads to populated student cards.",
     "category": "Student List Viewing",
     "priority": "High",
     "steps": [
@@ -176,22 +172,30 @@
       },
       {
         "type": "assertion",
-        "description": "Verify element \"skeleton loading cards\" is visible"
+        "description": "Verify text \"Retry\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"error\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Retry\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"skeleton loading\" is visible"
       },
       {
         "type": "assertion",
         "description": "Verify element \"student card\" is visible"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify text \"Retry\" is not visible"
       }
     ]
   },
   {
     "id": "TC006",
-    "title": "Student cards are scrollable and show expected visible content",
-    "description": "Verifies that the list can be scrolled and student cards remain visible with basic identifying content.",
+    "title": "Scroll and verify student cards remain visible and usable after long list navigation",
+    "description": "Verifies scrolling through the student list keeps student cards rendering and the list remains stable when navigating far down and back up.",
     "category": "Student List Viewing",
     "priority": "Medium",
     "steps": [
@@ -226,14 +230,563 @@
       {
         "type": "assertion",
         "description": "Verify element \"student card\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the top of the students list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"student card\" is visible"
       }
     ]
   },
   {
     "id": "TC007",
-    "title": "Manual refresh action triggers loading and preserves list viewing",
-    "description": "Verifies that tapping the refresh action reloads the list and returns to the normal populated state.",
+    "title": "Retry control remains accessible after scrolling in error state",
+    "description": "Verifies that if an error state is shown, the retry affordance remains discoverable and usable even after scrolling.",
     "category": "Student List Viewing",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Login\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/students\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Retry\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the bottom of the students list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Retry\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Retry\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"student card\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Search filters the student list in real time for a matching query",
+    "description": "Verifies that typing into the search input immediately filters the visible student list to matching results.",
+    "category": "Student Search and Sorting",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/students\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"a\" into the search input"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the visible student list updates to show results matching the query"
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "Search is case-insensitive (same results for different letter case)",
+    "description": "Verifies that the search results are consistent when the same query is entered in different letter case.",
+    "category": "Student Search and Sorting",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/students\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"an\" into the search input"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the visible student list updates to show results matching the query"
+      },
+      {
+        "type": "action",
+        "description": "Type \"AN\" into the search input"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the visible student list shows the same matching results as before"
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "Search trims surrounding whitespace in the query",
+    "description": "Verifies that adding leading/trailing spaces to the query does not prevent matching results from appearing.",
+    "category": "Student Search and Sorting",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/students\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"  a  \" into the search input"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the visible student list updates to show results matching the query"
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Search with no matches shows an empty state",
+    "description": "Verifies that a query with no matching students displays a visible empty-state message or indicator.",
+    "category": "Student Search and Sorting",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/students\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"zzzz-no-match-123\" into the search input"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"No results\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "Clearing a no-match search repopulates the list",
+    "description": "Verifies that clearing the search input after no results returns the full student list view.",
+    "category": "Student Search and Sorting",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/students\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"zzzz-no-match-123\" into the search input"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"No results\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Type \"\" into the search input"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the element \"student list\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "Sort button cycles sort modes and visibly changes the list order",
+    "description": "Verifies that tapping the sort control cycles modes and the visible order of students updates accordingly.",
+    "category": "Student Search and Sorting",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/students\""
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sort\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the visible student list order updates to reflect the selected sort mode"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sort\" button"
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "Sort mode change is reflected by a visible label/state indicator",
+    "description": "Verifies that each sort mode change is communicated via a visible label or control state (for accessibility and clarity).",
+    "category": "Student Search and Sorting",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/students\""
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sort\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Sort\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sort\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Sort\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC015",
+    "title": "Search results remain filtered when changing sort mode",
+    "description": "Verifies that sorting reorders only the currently filtered results without clearing the search query.",
+    "category": "Student Search and Sorting",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/students\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"a\" into the search input"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the visible student list updates to show results matching the query"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sort\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the visible student list remains filtered to results matching the query"
+      }
+    ]
+  },
+  {
+    "id": "TC016",
+    "title": "Create student successfully from Add Student modal",
+    "description": "Verifies a user can create a student via the modal and the new student appears in the list after the modal closes.",
+    "category": "Student Create and Edit",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Login\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/students\""
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Add Student\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Add Student\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC017",
+    "title": "Create student modal field entry and submit shows new record in list",
+    "description": "Verifies filling first name, last name, rating and submitting creates a record and returns to the list view showing the new student.",
+    "category": "Student Create and Edit",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Login\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/students\""
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Add Student\" button"
+      },
+      {
+        "type": "action",
+        "description": "Type \"TestFirst\" into the first name field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"TestLast\" into the last name field"
+      }
+    ]
+  },
+  {
+    "id": "TC018",
+    "title": "Create student success closes modal and displays the new name",
+    "description": "Verifies submitting a valid create form closes the modal and the new student name is visible in the list.",
+    "category": "Student Create and Edit",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Login\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/students\""
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Add Student\" button"
+      },
+      {
+        "type": "action",
+        "description": "Type \"88\" into the rating field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Save\" or \"Create\" button"
+      }
+    ]
+  },
+  {
+    "id": "TC019",
+    "title": "Create student with blank required fields shows validation and stays in modal",
+    "description": "Verifies required-field validation prevents submission and keeps the create modal open with visible error messaging.",
+    "category": "Student Create and Edit",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Login\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/students\""
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Add Student\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Save\" or \"Create\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Required\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC020",
+    "title": "Dirty create modal close shows discard confirmation and cancel keeps modal open",
+    "description": "Verifies unsaved-change protection prompts on close and Cancel keeps the user in the create modal with entered data intact.",
+    "category": "Student Create and Edit",
     "priority": "Medium",
     "steps": [
       {
@@ -258,658 +811,103 @@
       },
       {
         "type": "action",
-        "description": "Click the \"Refresh\" action"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"loading indicator\" is visible"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"student card\" is visible"
-      }
-    ]
-  },
-  {
-    "id": "TC008",
-    "title": "Search filters the student list in real time with a matching query",
-    "description": "Verifies that typing into the search input filters the visible student list as the user types.",
-    "category": "Student Search and Sorting",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Navigate to /login"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Email\" is visible"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_USER}}\" into \"Email\" field"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_PASSWORD}}\" into \"Password\" field"
-      },
-      {
-        "type": "action",
-        "description": "Click \"Log in\""
-      },
-      {
-        "type": "assertion",
-        "description": "Verify URL contains \"/students\""
-      },
-      {
-        "type": "action",
-        "description": "Type \"a\" into the search input"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Student list\" is visible"
-      }
-    ]
-  },
-  {
-    "id": "TC009",
-    "title": "Search narrows results further when additional characters are typed",
-    "description": "Verifies that search results refine progressively as the query becomes more specific.",
-    "category": "Student Search and Sorting",
-    "priority": "Medium",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Navigate to /login"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Email\" is visible"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_USER}}\" into \"Email\" field"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_PASSWORD}}\" into \"Password\" field"
-      },
-      {
-        "type": "action",
-        "description": "Click \"Log in\""
-      },
-      {
-        "type": "assertion",
-        "description": "Verify URL contains \"/students\""
-      },
-      {
-        "type": "action",
-        "description": "Type \"a\" into the search input"
-      },
-      {
-        "type": "action",
-        "description": "Type \"n\" into the search input"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Student list\" is visible"
-      }
-    ]
-  },
-  {
-    "id": "TC010",
-    "title": "Clearing the search input restores the full student list",
-    "description": "Verifies that removing the query repopulates the list to the unfiltered state.",
-    "category": "Student Search and Sorting",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Navigate to /login"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Email\" is visible"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_USER}}\" into \"Email\" field"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_PASSWORD}}\" into \"Password\" field"
-      },
-      {
-        "type": "action",
-        "description": "Click \"Log in\""
-      },
-      {
-        "type": "assertion",
-        "description": "Verify URL contains \"/students\""
-      },
-      {
-        "type": "action",
-        "description": "Type \"a\" into the search input"
-      },
-      {
-        "type": "action",
-        "description": "Press \"Escape\" to clear the search input"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Student list\" is visible"
-      }
-    ]
-  },
-  {
-    "id": "TC011",
-    "title": "Search with no matches shows an empty state, and clearing restores results",
-    "description": "Verifies the empty-results UI appears for unmatched queries and disappears after clearing the query.",
-    "category": "Student Search and Sorting",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Navigate to /login"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Email\" is visible"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_USER}}\" into \"Email\" field"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_PASSWORD}}\" into \"Password\" field"
-      },
-      {
-        "type": "action",
-        "description": "Click \"Log in\""
-      },
-      {
-        "type": "assertion",
-        "description": "Verify URL contains \"/students\""
-      },
-      {
-        "type": "action",
-        "description": "Type \"zzzzzz_no_match\" into the search input"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify text \"No results\" is visible"
-      }
-    ]
-  },
-  {
-    "id": "TC012",
-    "title": "Sort button cycles sort modes and updates the list order",
-    "description": "Verifies that tapping the sort control changes the sort mode and reorders the visible list accordingly.",
-    "category": "Student Search and Sorting",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Navigate to /login"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Email\" is visible"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_USER}}\" into \"Email\" field"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_PASSWORD}}\" into \"Password\" field"
-      },
-      {
-        "type": "action",
-        "description": "Click \"Log in\""
-      },
-      {
-        "type": "assertion",
-        "description": "Verify URL contains \"/students\""
-      },
-      {
-        "type": "action",
-        "description": "Click the sort button"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Student list\" is visible"
-      }
-    ]
-  },
-  {
-    "id": "TC013",
-    "title": "Repeated sort cycles through multiple modes without errors",
-    "description": "Verifies that multiple taps on sort continue cycling modes and the list remains visible and stable.",
-    "category": "Student Search and Sorting",
-    "priority": "Medium",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Navigate to /login"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Email\" is visible"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_USER}}\" into \"Email\" field"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_PASSWORD}}\" into \"Password\" field"
-      },
-      {
-        "type": "action",
-        "description": "Click \"Log in\""
-      },
-      {
-        "type": "assertion",
-        "description": "Verify URL contains \"/students\""
-      },
-      {
-        "type": "action",
-        "description": "Click the sort button"
-      },
-      {
-        "type": "action",
-        "description": "Click the sort button"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Student list\" is visible"
-      }
-    ]
-  },
-  {
-    "id": "TC014",
-    "title": "Search results remain filtered when changing sort mode",
-    "description": "Verifies that sorting only reorders the currently filtered results and does not clear the search query.",
-    "category": "Student Search and Sorting",
-    "priority": "Medium",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Navigate to /login"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Email\" is visible"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_USER}}\" into \"Email\" field"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_PASSWORD}}\" into \"Password\" field"
-      },
-      {
-        "type": "action",
-        "description": "Click \"Log in\""
-      },
-      {
-        "type": "assertion",
-        "description": "Verify URL contains \"/students\""
-      },
-      {
-        "type": "action",
-        "description": "Type \"a\" into the search input"
-      },
-      {
-        "type": "action",
-        "description": "Click the sort button"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Student list\" is visible"
-      }
-    ]
-  },
-  {
-    "id": "TC015",
-    "title": "Create a new student successfully from the Add Student modal",
-    "description": "Verifies a user can open the create modal, submit valid fields, and see the new student appear in the list.",
-    "category": "Student Create and Edit",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Navigate to /login"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
-      },
-      {
-        "type": "action",
-        "description": "Click the \"Log in\" button"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify URL contains \"/students\""
-      },
-      {
-        "type": "action",
         "description": "Click the \"Add Student\" button"
       },
       {
         "type": "action",
-        "description": "Type \"TestFirst\" into the first name field"
+        "description": "Type \"UnsavedName\" into the first name field"
       },
       {
         "type": "action",
-        "description": "Type \"TestLast\" into the last name field"
-      },
-      {
-        "type": "action",
-        "description": "Type \"4\" into the rating field"
-      },
-      {
-        "type": "action",
-        "description": "Click the \"Create\" or \"Save\" button"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Add Student\" is visible"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify text \"TestFirst\" is visible"
-      }
-    ]
-  },
-  {
-    "id": "TC016",
-    "title": "Create student validation: required fields left blank",
-    "description": "Verifies the create modal shows validation errors and does not close when required fields are missing.",
-    "category": "Student Create and Edit",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Navigate to /login"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
-      },
-      {
-        "type": "action",
-        "description": "Click the \"Log in\" button"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify URL contains \"/students\""
-      },
-      {
-        "type": "action",
-        "description": "Click the \"Add Student\" button"
-      },
-      {
-        "type": "action",
-        "description": "Click the \"Create\" or \"Save\" button"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify text \"First name\" is visible"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify text \"Last name\" is visible"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Create\" is visible"
-      }
-    ]
-  },
-  {
-    "id": "TC017",
-    "title": "Unsaved changes protection: cancel discard keeps user in create modal",
-    "description": "Verifies attempting to close a dirty create form prompts a discard confirmation and choosing Cancel keeps the modal open.",
-    "category": "Student Create and Edit",
-    "priority": "Medium",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Navigate to /login"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
-      },
-      {
-        "type": "action",
-        "description": "Click the \"Log in\" button"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify URL contains \"/students\""
-      },
-      {
-        "type": "action",
-        "description": "Click the \"Add Student\" button"
-      },
-      {
-        "type": "action",
-        "description": "Type \"DirtyFirst\" into the first name field"
-      },
-      {
-        "type": "action",
-        "description": "Click the modal \"Close\" button"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify text \"Discard\" is visible"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify text \"Cancel\" is visible"
-      },
-      {
-        "type": "action",
-        "description": "Click the \"Cancel\" button"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Create\" is visible"
-      }
-    ]
-  },
-  {
-    "id": "TC018",
-    "title": "Unsaved changes protection: discard closes create modal and clears changes",
-    "description": "Verifies choosing Discard on the unsaved-changes dialog closes the create modal and the unsaved data is not persisted.",
-    "category": "Student Create and Edit",
-    "priority": "Medium",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Navigate to /login"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
-      },
-      {
-        "type": "action",
-        "description": "Click the \"Log in\" button"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify URL contains \"/students\""
-      },
-      {
-        "type": "action",
-        "description": "Click the \"Add Student\" button"
-      },
-      {
-        "type": "action",
-        "description": "Type \"DiscardMe\" into the first name field"
-      },
-      {
-        "type": "action",
-        "description": "Click the modal \"Close\" button"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify text \"Discard\" is visible"
-      },
-      {
-        "type": "action",
-        "description": "Click the \"Discard\" button"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Add Student\" is visible"
-      },
-      {
-        "type": "action",
-        "description": "Click the \"Add Student\" button"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify text \"DiscardMe\" is not visible"
-      }
-    ]
-  },
-  {
-    "id": "TC019",
-    "title": "Edit an existing student successfully updates values in the list",
-    "description": "Verifies a user can open edit for an existing student, change fields, save, and see updated values in the list.",
-    "category": "Student Create and Edit",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Navigate to /login"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
-      },
-      {
-        "type": "action",
-        "description": "Click the \"Log in\" button"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify URL contains \"/students\""
-      },
-      {
-        "type": "action",
-        "description": "Click the first visible \"Edit\" button on a student card"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify text \"Edit Student\" is visible"
-      },
-      {
-        "type": "action",
-        "description": "Type \"UpdatedFirst\" into the first name field"
-      },
-      {
-        "type": "action",
-        "description": "Type \"5\" into the rating field"
-      },
-      {
-        "type": "action",
-        "description": "Click the \"Save\" button"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Add Student\" is visible"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify text \"UpdatedFirst\" is visible"
-      }
-    ]
-  },
-  {
-    "id": "TC020",
-    "title": "Edit modal required-field validation prevents saving",
-    "description": "Verifies clearing a required field in edit shows validation and keeps the user in the edit modal.",
-    "category": "Student Create and Edit",
-    "priority": "Medium",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Navigate to /login"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
-      },
-      {
-        "type": "action",
-        "description": "Click the \"Log in\" button"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify URL contains \"/students\""
-      },
-      {
-        "type": "action",
-        "description": "Click the first visible \"Edit\" button on a student card"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify text \"Edit Student\" is visible"
-      },
-      {
-        "type": "action",
-        "description": "Type \"\" into the first name field"
-      },
-      {
-        "type": "action",
-        "description": "Click the \"Save\" button"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify text \"First name\" is visible"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Save\" is visible"
+        "description": "Click the modal \"Close\" or \"X\" button"
       }
     ]
   },
   {
     "id": "TC021",
-    "title": "Delete a student after confirming in the dialog (happy path)",
+    "title": "Cancel discard confirmation keeps create modal visible",
+    "description": "Verifies choosing Cancel on the discard confirmation leaves the create modal open.",
+    "category": "Student Create and Edit",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Login\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/students\""
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Add Student\" button"
+      },
+      {
+        "type": "action",
+        "description": "Type \"UnsavedName\" into the first name field"
+      },
+      {
+        "type": "action",
+        "description": "Click \"Cancel\" on the discard changes confirmation dialog"
+      }
+    ]
+  },
+  {
+    "id": "TC022",
+    "title": "Dirty create modal close shows discard confirmation and discard closes modal",
+    "description": "Verifies choosing Discard closes the modal and discards unsaved changes.",
+    "category": "Student Create and Edit",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Login\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/students\""
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Add Student\" button"
+      },
+      {
+        "type": "action",
+        "description": "Type \"WillDiscard\" into the first name field"
+      },
+      {
+        "type": "action",
+        "description": "Click \"Discard\" on the discard changes confirmation dialog"
+      }
+    ]
+  },
+  {
+    "id": "TC023",
+    "title": "Delete a student after confirming in the dialog",
     "description": "Verifies a student can be deleted via confirmation dialog and is removed from the list with visible success feedback.",
     "category": "Student Deletion",
     "priority": "High",
@@ -928,7 +926,7 @@
       },
       {
         "type": "action",
-        "description": "Click the \"Log In\" button"
+        "description": "Click the \"Log in\" button"
       },
       {
         "type": "assertion",
@@ -936,7 +934,7 @@
       },
       {
         "type": "action",
-        "description": "Click the delete action on the first visible student card"
+        "description": "Click the delete action on a student card"
       },
       {
         "type": "assertion",
@@ -944,178 +942,14 @@
       },
       {
         "type": "action",
-        "description": "Click the \"Confirm\" button"
-      }
-    ]
-  },
-  {
-    "id": "TC022",
-    "title": "Cancel deletion from the confirmation dialog",
-    "description": "Verifies canceling the delete confirmation keeps the student card visible in the list.",
-    "category": "Student Deletion",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Navigate to /login"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
-      },
-      {
-        "type": "action",
-        "description": "Click the \"Log In\" button"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify URL contains \"/students\""
-      },
-      {
-        "type": "action",
-        "description": "Click the delete action on the first visible student card"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Delete confirmation dialog\" is visible"
-      },
-      {
-        "type": "action",
-        "description": "Click the \"Cancel\" button"
-      }
-    ]
-  },
-  {
-    "id": "TC023",
-    "title": "Delete failure rolls back optimistic removal and shows error",
-    "description": "Verifies that when the server returns an error, the optimistically removed student card is restored and an error message is shown.",
-    "category": "Student Deletion",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Navigate to /login"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
-      },
-      {
-        "type": "action",
-        "description": "Click the \"Log In\" button"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify URL contains \"/students\""
-      },
-      {
-        "type": "action",
-        "description": "Click the delete action on the first visible student card"
-      },
-      {
-        "type": "action",
-        "description": "Click the \"Confirm\" button"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify text \"Error\" is visible"
+        "description": "Click the \"Confirm\" button in the delete confirmation dialog"
       }
     ]
   },
   {
     "id": "TC024",
-    "title": "Dismiss delete confirmation dialog using close control (if present)",
-    "description": "Verifies the delete confirmation dialog can be dismissed without deleting and the list remains unchanged.",
-    "category": "Student Deletion",
-    "priority": "Medium",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Navigate to /login"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
-      },
-      {
-        "type": "action",
-        "description": "Click the \"Log In\" button"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify URL contains \"/students\""
-      },
-      {
-        "type": "action",
-        "description": "Click the delete action on the first visible student card"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify element \"Delete confirmation dialog\" is visible"
-      },
-      {
-        "type": "action",
-        "description": "Click the \"Close\" button in the delete confirmation dialog"
-      }
-    ]
-  },
-  {
-    "id": "TC025",
-    "title": "Delete a student after scrolling the list",
-    "description": "Verifies delete works for a student card that is not initially visible (requires scrolling).",
-    "category": "Student Deletion",
-    "priority": "Medium",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Navigate to /login"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
-      },
-      {
-        "type": "action",
-        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
-      },
-      {
-        "type": "action",
-        "description": "Click the \"Log In\" button"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify URL contains \"/students\""
-      },
-      {
-        "type": "action",
-        "description": "Scroll to the bottom of the student list"
-      },
-      {
-        "type": "action",
-        "description": "Click the delete action on a student card near the bottom of the list"
-      },
-      {
-        "type": "action",
-        "description": "Click the \"Confirm\" button"
-      }
-    ]
-  },
-  {
-    "id": "TC026",
-    "title": "Confirmation dialog content is shown before any delete occurs",
-    "description": "Verifies that tapping delete does not remove the card immediately and a confirmation dialog is shown first.",
+    "title": "Cancel deletion from the confirmation dialog",
+    "description": "Verifies canceling the delete confirmation leaves the student card visible in the list.",
     "category": "Student Deletion",
     "priority": "High",
     "steps": [
@@ -1133,7 +967,7 @@
       },
       {
         "type": "action",
-        "description": "Click the \"Log In\" button"
+        "description": "Click the \"Log in\" button"
       },
       {
         "type": "assertion",
@@ -1141,22 +975,22 @@
       },
       {
         "type": "action",
-        "description": "Click the delete action on the first visible student card"
+        "description": "Click the delete action on a student card"
       },
       {
         "type": "assertion",
         "description": "Verify element \"Delete confirmation dialog\" is visible"
       },
       {
-        "type": "assertion",
-        "description": "Verify text \"Cancel\" is visible"
+        "type": "action",
+        "description": "Click the \"Cancel\" button in the delete confirmation dialog"
       }
     ]
   },
   {
-    "id": "TC027",
-    "title": "Delete success shows visible feedback",
-    "description": "Verifies that after confirming delete, a visible success message/feedback is shown to the user.",
+    "id": "TC025",
+    "title": "Delete confirmation dialog shows expected content",
+    "description": "Verifies the confirmation dialog appears after tapping delete and presents confirm/cancel controls.",
     "category": "Student Deletion",
     "priority": "Medium",
     "steps": [
@@ -1174,7 +1008,7 @@
       },
       {
         "type": "action",
-        "description": "Click the \"Log In\" button"
+        "description": "Click the \"Log in\" button"
       },
       {
         "type": "assertion",
@@ -1182,11 +1016,134 @@
       },
       {
         "type": "action",
-        "description": "Click the delete action on the first visible student card"
+        "description": "Click the delete action on a student card"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Are you sure\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Confirm\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC026",
+    "title": "Optimistic removal occurs immediately after confirming delete",
+    "description": "Verifies the student card disappears from the list immediately after confirming delete (optimistic UI behavior).",
+    "category": "Student Deletion",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
       },
       {
         "type": "action",
-        "description": "Click the \"Confirm\" button"
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/students\""
+      },
+      {
+        "type": "action",
+        "description": "Click the delete action on a student card"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Confirm\" button in the delete confirmation dialog"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Deleting\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC027",
+    "title": "Rollback on delete failure restores the student and shows an error message",
+    "description": "Verifies that when the server delete fails, the removed student is restored and a visible error message is displayed.",
+    "category": "Student Deletion",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/students\""
+      },
+      {
+        "type": "action",
+        "description": "Click the delete action on a student card"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Confirm\" button in the delete confirmation dialog"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Failed\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC028",
+    "title": "Delete success feedback is visible after confirming delete",
+    "description": "Verifies a visible success message/toast appears after a successful deletion confirmation.",
+    "category": "Student Deletion",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email/username field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/students\""
+      },
+      {
+        "type": "action",
+        "description": "Click the delete action on a student card"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Confirm\" button in the delete confirmation dialog"
       },
       {
         "type": "assertion",

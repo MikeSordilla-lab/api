@@ -2,20 +2,16 @@
   "status": "commited",
   "type": "backend",
   "scope": "codebase",
-  "localEndpoint": "http://localhost:80",
+  "localEndpoint": "http://localhost:80/api",
   "backendAuthType": "public",
   "executionArgs": {
     "projectName": "api",
     "projectPath": "c:\\xampp\\htdocs\\api",
-    "testIds": [
-      "TC007"
-    ],
-    "additionalInstruction": "Run TC007 after delete endpoint compatibility update.",
-    "serverMode": "development",
+    "testIds": [],
+    "additionalInstruction": "Test the Student App API backend with comprehensive validation for all endpoints including authentication, CRUD operations, input validation, and XSS prevention.",
+    "serverMode": "production",
     "envs": {
       "API_KEY": "sk-user-Gd-ncDhwQFKadNVInbYEnKlD95b2TvA2SsjUEhqcaFTJuppIVcRkqXewsA9hFNIEqVxx1gIp7sN_UQ2a2ZRZLA1eaRRItqPrbQFE4becuGevkv9n8QoXPNRSHz8jJpv-GP8"
     }
-  },
-  "serverPort": 43459,
-  "proxy": "http://0514d920-77cb-4041-9d0b-3ada7e344028:ui01h93CeGrcMtAcQyJDnP9vCXBMfHAW@tun.testsprite.com:8080"
+  }
 }

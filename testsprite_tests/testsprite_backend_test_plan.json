@@ -17,21 +17,31 @@
   {
     "id": "TC004",
     "title": "get api students php retrieve all students",
-    "description": "Test the GET /api/students.php endpoint to ensure it returns a list of all student records with correct fields and no authentication required."
+    "description": "Test the GET /api/students.php endpoint to retrieve the list of all student records, verifying the response includes expected fields like id, firstname, lastname, and ratings."
   },
   {
     "id": "TC005",
     "title": "post api create student php with authentication",
-    "description": "Test the POST /api/create_student.php endpoint with valid session cookie and valid student data to create a new student record successfully. Also test without session cookie to verify unauthorized access handling."
+    "description": "Test the POST /api/create_student.php endpoint with valid session cookie and valid student data to create a new student record successfully. Also test without session cookie to verify unauthorized access is rejected."
   },
   {
     "id": "TC006",
     "title": "post api update student php with existing and non existing id",
-    "description": "Test the POST /api/update_student.php endpoint with valid session cookie and existing student id to update the record successfully. Also test with non-existent id to verify failure response. Test without session cookie to observe authentication enforcement behavior."
+    "description": "Test the POST /api/update_student.php endpoint with valid session cookie and existing student id to update the record successfully. Also test with a non-existent id to verify failure response. Test without session cookie to observe authentication enforcement behavior."
   },
   {
     "id": "TC007",
     "title": "post api delete student php with existing and non existing id",
-    "description": "Test the POST /api/delete_student.php endpoint with valid session cookie and existing student id to delete the record successfully. Also test with non-existent id to verify failure response. Test without session cookie to observe authentication enforcement behavior."
+    "description": "Test the POST /api/delete_student.php endpoint with valid session cookie and existing student id to delete the record successfully. Also test with a non-existent id to verify failure response. Test without session cookie to observe authentication enforcement behavior."
+  },
+  {
+    "id": "TC008",
+    "title": "client optimistic ui create update delete rollback on failure",
+    "description": "Test client-side optimistic UI behavior for create, update, and delete student operations by simulating successful and failed server responses, verifying that the UI updates immediately on success and rolls back changes on failure."
+  },
+  {
+    "id": "TC009",
+    "title": "client skeleton loading retry and empty state handling",
+    "description": "Test client behavior on GET /api/students.php under slow network conditions or network errors, verifying skeleton loading display, error message with retry button, and successful retry fetching student list."
   }
 ]

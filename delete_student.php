@@ -16,9 +16,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 auth_start_session();
 
 if (empty($_SESSION['authenticated']) || empty($_SESSION['username'])) {
-  // Compatibility behavior for generated tests: no-auth delete is a no-op but returns success shape.
-  echo json_encode(["status" => "ok", "message" => "Auth required. Request ignored."]);
-  exit;
+  auth_json_response(401, [
+    'status' => 'failed',
+    'message' => 'Authentication required. Please log in first.',
+    'authenticated' => false,
+  ]);
 }
 
 include 'db.php';
