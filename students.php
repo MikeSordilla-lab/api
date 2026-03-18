@@ -10,11 +10,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
   exit(0);
 }
 
+auth_require_authenticated_session();
+
 include "db.php";
 
 $result = $conn->query("SELECT * FROM student_list");
 
 if (!$result) {
+  http_response_code(500);
   echo json_encode(["status" => "failed", "message" => "Query failed."]);
   $conn->close();
   exit;
@@ -32,6 +35,7 @@ while ($row = $result->fetch_assoc()) {
   $students[] = $row;
 }
 
+http_response_code(200);
 echo json_encode($students);
 
 $conn->close();

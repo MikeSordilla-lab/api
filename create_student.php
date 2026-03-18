@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 include_once __DIR__ . '/auth_guard.php';
 
 auth_send_cors_headers('POST, OPTIONS', true);
@@ -48,9 +50,9 @@ $stmt = $conn->prepare(
 $stmt->bind_param("ssds", $firstname, $lastname, $ratings, $last_update);
 
 if ($stmt->execute()) {
-  echo json_encode(["status" => "ok", "message" => "New student has been created."]);
+  auth_json_response(200, ["status" => "ok", "message" => "New student has been created."]);
 } else {
-  echo json_encode(["status" => "failed", "message" => "Error creating student."]);
+  auth_json_response(500, ["status" => "failed", "message" => "Error creating student."]);
 }
 $stmt->close();
 $conn->close();

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 include_once __DIR__ . '/auth_guard.php';
 
 auth_send_cors_headers('POST, OPTIONS', true);
@@ -55,12 +57,12 @@ $stmt->bind_param("ssdsi", $firstname, $lastname, $ratings, $last_update, $id);
 
 if ($stmt->execute()) {
   if ($stmt->affected_rows > 0) {
-    echo json_encode(["status" => "ok", "message" => "Student's information has been updated."]);
+    auth_json_response(200, ["status" => "ok", "message" => "Student's information has been updated."]);
   } else {
-    echo json_encode(["status" => "failed", "message" => "Student not found."]);
+    auth_json_response(200, ["status" => "failed", "message" => "Student not found."]);
   }
 } else {
-  echo json_encode(["status" => "failed", "message" => "Error updating student."]);
+  auth_json_response(200, ["status" => "failed", "message" => "Error updating student."]);
 }
 $stmt->close();
 $conn->close();

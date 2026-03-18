@@ -33,7 +33,7 @@ const postJson = async (path, payload, { withCredentials = false } = {}) => {
 
 export const getStudents = async () => {
   const response = await fetch(`${getApiBaseUrl()}/students.php`, {
-    credentials: "same-origin",
+    credentials: "include",
   });
 
   if (!response.ok) {
@@ -57,16 +57,20 @@ export const createStudent = async ({ firstname, lastname, ratings }) => {
 };
 
 export const updateStudent = async ({ id, firstname, lastname, ratings }) => {
-  return postJson("update_student.php", {
-    id,
-    firstname,
-    lastname,
-    ratings: parseInt(ratings, 10),
-  });
+  return postJson(
+    "update_student.php",
+    {
+      id,
+      firstname,
+      lastname,
+      ratings: parseInt(ratings, 10),
+    },
+    { withCredentials: true },
+  );
 };
 
 export const deleteStudent = async (id) => {
-  return postJson("delete_student.php", { id });
+  return postJson("delete_student.php", { id }, { withCredentials: true });
 };
 
 export const login = async ({ username, password }) => {
