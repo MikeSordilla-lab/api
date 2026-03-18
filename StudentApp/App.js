@@ -70,6 +70,7 @@ const initialFormValues = { firstname: "", lastname: "", ratings: "" };
 export default function App() {
   const { width } = useWindowDimensions();
   const authConfig = getAuthConfig();
+  const defaultPassword = authConfig.defaultPassword || "";
 
   const [students, setStudents] = useState([]);
   const [firstname, setFirstname] = useState("");
@@ -86,7 +87,7 @@ export default function App() {
   const [highlightedId, setHighlightedId] = useState(null);
   const [focusedControl, setFocusedControl] = useState("");
   const [username, setUsername] = useState(authConfig.defaultUsername);
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState(defaultPassword);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authUser, setAuthUser] = useState("");
