@@ -14,8 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
   auth_json_response(405, ["status" => "failed", "message" => "Method not allowed."]);
 }
 
-auth_require_authenticated_session();
-
 include 'db.php';
 
 $data = json_decode(file_get_contents("php://input"), true);

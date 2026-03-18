@@ -15,17 +15,14 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import LoginPage from "./components/LoginPage";
+
 import StudentCard from "./components/StudentCard";
 import StudentForm from "./components/StudentForm";
 import StudentModal from "./components/StudentModal";
 import {
   createStudent as apiCreateStudent,
   deleteStudent as apiDeleteStudent,
-  getAuthStatus,
   getStudents,
-  login as apiLogin,
-  logout as apiLogout,
   updateStudent as apiUpdateStudent,
 } from "./services/studentApi";
 import {
@@ -41,8 +38,6 @@ import {
   isSuccessStatus,
   showDeleteConfirmation,
   showErrorAlert,
-  showInvalidCredentialAlert,
-  showSessionExpiredAlert,
   showSuccessAlert,
 } from "./utils/alerts";
 import {
@@ -168,17 +163,6 @@ export default function App() {
       ratings.trim() !== String(editSnapshot.ratings).trim());
 
   const openAddModal = () => {
-    if (!isAuthenticated) {
-      setPendingAddIntent(true);
-      setAuthErrorMessage("Please log in to add a student.");
-      showErrorAlert({
-        title: "Login Required",
-        message: "Please log in first to add a student.",
-        onNativeAlert: openNativeAlert,
-      });
-      return;
-    }
-
     setIsEditModalVisible(false);
     clearForm();
     setIsAddModalVisible(true);
@@ -256,22 +240,12 @@ export default function App() {
   };
 
   const bootstrapAuthState = async () => {
+    // Bypass authentication - directly authenticate user
     setIsAuthLoading(true);
-
     try {
-      const auth = await getAuthStatus();
-      if (auth?.authenticated) {
-        setIsAuthenticated(true);
-        setAuthUser(auth?.user?.username || "");
-        setAuthErrorMessage("");
-      } else {
-        setIsAuthenticated(false);
-        setAuthUser("");
-      }
-    } catch {
-      setIsAuthenticated(false);
-      setAuthUser("");
-      setAuthErrorMessage("Unable to verify login status.");
+      setIsAuthenticated(true);
+      setAuthUser("User");
+      setAuthErrorMessage("");
     } finally {
       setIsAuthLoading(false);
     }
@@ -282,62 +256,9 @@ export default function App() {
     bootstrapAuthState();
   }, []);
 
-  const handleLogin = async () => {
-    setIsSubmitting(true);
-    setAuthErrorMessage("");
+  // Removed handleLogin - authentication bypassed
 
-    try {
-      const data = await apiLogin({ username, password });
-      if (!isSuccessStatus(data?.status)) {
-        throw new Error(data?.message || "Login failed.");
-      }
-
-      setIsAuthenticated(true);
-      setAuthUser(String(username || "").trim());
-      setPassword("");
-
-      setPendingAddIntent(false);
-      setIsAddModalVisible(false);
-    } catch (error) {
-      if (error?.status === 401) {
-        setIsAuthenticated(false);
-        setAuthUser("");
-        setAuthErrorMessage("Invalid username or password.");
-        showInvalidCredentialAlert({ onNativeAlert: openNativeAlert });
-      } else {
-        setAuthErrorMessage(
-          error?.message || "Login failed. Please try again.",
-        );
-        showErrorAlert({
-          title: "Login Error",
-          message: error?.message || "Login failed. Please try again.",
-          onNativeAlert: openNativeAlert,
-        });
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleLogout = async () => {
-    if (isSubmitting) {
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      await apiLogout();
-    } catch {
-      // Local auth reset is still applied even when server logout fails.
-    } finally {
-      setIsAuthenticated(false);
-      setAuthUser("");
-      setIsAddModalVisible(false);
-      setPendingAddIntent(false);
-      setPassword("");
-      setIsSubmitting(false);
-    }
-  };
+  // Removed handleLogout - authentication bypassed
 
   const applyRowHighlight = (id) => {
     setHighlightedId(id);
@@ -383,16 +304,6 @@ export default function App() {
       }
     } catch (error) {
       setStudents(rollbackStudents(optimistic.rollback));
-
-      if (error?.status === 401) {
-        setIsAuthenticated(false);
-        setAuthUser("");
-        setPendingAddIntent(true);
-        setIsAddModalVisible(false);
-        setAuthErrorMessage("Session expired. Please log in again.");
-        showSessionExpiredAlert({ onNativeAlert: openNativeAlert });
-        return;
-      }
 
       showErrorAlert({
         title: "Create Error",
@@ -552,24 +463,6 @@ export default function App() {
     </View>
   );
 
-  if (!isAuthenticated) {
-    return (
-      <>
-        <LoginPage
-          isSubmitting={isSubmitting}
-          isAuthLoading={isAuthLoading}
-          username={username}
-          password={password}
-          setUsername={setUsername}
-          setPassword={setPassword}
-          onSubmit={handleLogin}
-          authErrorMessage={authErrorMessage}
-          sessionTimeoutMinutes={authConfig.sessionTimeoutMinutes}
-        />
-      </>
-    );
-  }
-
   return (
     <SafeAreaView style={styles.screen}>
       <ScrollView
@@ -592,8 +485,7 @@ export default function App() {
           <View>
             <Text style={styles.navbarBrand}>Student List</Text>
             <Text style={styles.navbarMeta}>
-              {displayedStudents.length} students • Logged in as{" "}
-              {authUser || username}
+              {displayedStudents.length} students
             </Text>
           </View>
 
@@ -624,26 +516,6 @@ export default function App() {
                 </Text>
               </View>
             </TouchableOpacity>
-
-            {isAuthenticated ? (
-              <TouchableOpacity
-                style={[
-                  styles.navButton,
-                  styles.logoutButton,
-                  focusedControl === "logout" ? styles.focusVisible : null,
-                ]}
-                onPress={handleLogout}
-                onFocus={() => setFocusedControl("logout")}
-                onBlur={() => setFocusedControl("")}
-                disabled={isSubmitting}
-                activeOpacity={0.85}
-                accessibilityRole="button"
-                accessibilityLabel="Log out"
-                accessibilityHint="Logs out and requires login for add student"
-              >
-                <Text style={styles.logoutButtonText}>Log Out</Text>
-              </TouchableOpacity>
-            ) : null}
 
             <TouchableOpacity
               style={[

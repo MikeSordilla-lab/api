@@ -18,28 +18,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
   ]);
 }
 
-auth_start_session();
-
-if (auth_enforce_session_timeout()) {
-  auth_json_response(200, [
-    'status' => 'failed',
-    'authenticated' => false,
-    'message' => 'Session expired. Please log in again.',
-  ]);
-}
-
-if (!empty($_SESSION['authenticated']) && !empty($_SESSION['username'])) {
-  auth_json_response(200, [
-    'status' => 'ok',
-    'authenticated' => true,
-    'user' => (string) $_SESSION['username'],
-    'message' => 'Authenticated.',
-  ]);
-}
-
+// No authentication required - return default user
 auth_json_response(200, [
-  'status' => 'failed',
-  'authenticated' => false,
-  'user' => null,
-  'message' => 'Not authenticated.',
+  'status' => 'ok',
+  'authenticated' => true,
+  'user' => 'user',
+  'message' => 'Authenticated.',
 ]);

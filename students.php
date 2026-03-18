@@ -10,8 +10,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
   exit(0);
 }
 
-auth_require_authenticated_session();
-
 include "db.php";
 
 $result = $conn->query("SELECT * FROM student_list");
